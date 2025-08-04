@@ -35,9 +35,7 @@ export default function NewProjectPage() {
     name: "",
     client: "",
     officer: "",
-    category: "",
-    priority: "",
-    budget: "",
+    type: "",
     location: "",
     description: "",
   })
@@ -135,7 +133,7 @@ export default function NewProjectPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="officer">Project Officer *</Label>
                   <Select
@@ -155,63 +153,33 @@ export default function NewProjectPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
+                  <Label htmlFor="type">Type *</Label>
                   <Select
-                    value={formData.category}
-                    onValueChange={(value) => handleInputChange("category", value)}
+                    value={formData.type}
+                    onValueChange={(value) => handleInputChange("type", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="commercial">Commercial</SelectItem>
-                      <SelectItem value="residential">Residential</SelectItem>
-                      <SelectItem value="infrastructure">Infrastructure</SelectItem>
-                      <SelectItem value="renovation">Renovation</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priority">Priority *</Label>
-                  <Select
-                    value={formData.priority}
-                    onValueChange={(value) => handleInputChange("priority", value)}
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="renovasi">Renovasi</SelectItem>
+                      <SelectItem value="instalasi">Instalasi</SelectItem>
+                      <SelectItem value="peralatan">Peralatan</SelectItem>
+                      <SelectItem value="perlengkapan">Perlengkapan</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="budget">Budget *</Label>
-                  <Input
-                    id="budget"
-                    type="number"
-                    value={formData.budget}
-                    onChange={(e) => handleInputChange("budget", e.target.value)}
-                    placeholder="Enter budget amount"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange("location", e.target.value)}
-                    placeholder="Project location"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  placeholder="Project location"
+                />
               </div>
 
               <div className="space-y-2">

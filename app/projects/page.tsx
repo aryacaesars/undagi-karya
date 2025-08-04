@@ -33,11 +33,7 @@ import {
   Edit,
   Calendar,
   DollarSign,
-  Clock,
   CheckCircle,
-  AlertCircle,
-  PauseCircle,
-  PlayCircle,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -47,129 +43,90 @@ const projectsData = [
     name: "Downtown Mall Phase 2",
     client: "MegaBuild Corporation",
     officer: "John Smith",
-    status: "Running",
     progress: 75,
     startDate: "2023-03-15",
     endDate: "2024-01-30",
-    budget: 850000,
-    spent: 637500,
     description: "Expansion of the existing mall with new retail spaces",
-    priority: "High",
+    type: "renovasi",
   },
   {
     id: 2,
     name: "Residential Complex A",
     client: "Urban Developers CV",
     officer: "Sarah Johnson",
-    status: "Planning",
     progress: 15,
     startDate: "2023-08-01",
     endDate: "2024-06-15",
-    budget: 620000,
-    spent: 93000,
     description: "Modern residential complex with 50 units",
-    priority: "Medium",
+    type: "instalasi",
   },
   {
     id: 3,
     name: "Highway Bridge Renovation",
     client: "City Infrastructure Ltd",
     officer: "Mike Wilson",
-    status: "Running",
     progress: 45,
     startDate: "2023-05-20",
     endDate: "2023-12-10",
-    budget: 1200000,
-    spent: 540000,
     description: "Complete renovation of the main highway bridge",
-    priority: "High",
+    type: "renovasi",
   },
   {
     id: 4,
     name: "Eco-Friendly Office Building",
     client: "Green Construction",
     officer: "Emily Davis",
-    status: "Completed",
     progress: 100,
     startDate: "2022-11-01",
     endDate: "2023-07-15",
-    budget: 480000,
-    spent: 465000,
     description: "LEED certified office building with solar panels",
-    priority: "Medium",
+    type: "instalasi",
   },
   {
     id: 5,
     name: "Home Renovation",
     client: "John Smith",
     officer: "Tom Brown",
-    status: "Running",
     progress: 60,
     startDate: "2023-06-10",
     endDate: "2023-10-30",
-    budget: 125000,
-    spent: 75000,
     description: "Complete home renovation including kitchen and bathrooms",
-    priority: "Low",
+    type: "peralatan",
   },
   {
     id: 6,
     name: "Shopping Center Expansion",
     client: "Premier Builders Inc",
     officer: "Lisa Anderson",
-    status: "Paused",
     progress: 30,
     startDate: "2023-04-01",
     endDate: "2024-02-28",
-    budget: 750000,
-    spent: 225000,
     description: "Adding new wing to existing shopping center",
-    priority: "Medium",
+    type: "perlengkapan",
   },
 ]
 
 export default function ProjectsPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [priorityFilter, setPriorityFilter] = useState("all")
+  const [typeFilter, setTypeFilter] = useState("all")
 
   const filteredProjects = projectsData.filter((project) => {
     const matchesSearch =
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.client.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || project.status.toLowerCase() === statusFilter
-    const matchesPriority = priorityFilter === "all" || project.priority.toLowerCase() === priorityFilter
+    const matchesType = typeFilter === "all" || project.type.toLowerCase() === typeFilter
 
-    return matchesSearch && matchesStatus && matchesPriority
+    return matchesSearch && matchesType
   })
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      Running: { color: "bg-blue-100 text-blue-800", icon: PlayCircle },
-      Planning: { color: "bg-purple-100 text-purple-800", icon: Clock },
-      Completed: { color: "bg-green-100 text-green-800", icon: CheckCircle },
-      Paused: { color: "bg-yellow-100 text-yellow-800", icon: PauseCircle },
-      Cancelled: { color: "bg-red-100 text-red-800", icon: AlertCircle },
-    }
-
-    const config = statusConfig[status as keyof typeof statusConfig]
-    const Icon = config?.icon || Clock
-
-    return (
-      <Badge className={config?.color || "bg-gray-100 text-gray-800"}>
-        <Icon className="w-3 h-3 mr-1" />
-        {status}
-      </Badge>
-    )
-  }
-
-  const getPriorityBadge = (priority: string) => {
+  const getTypeBadge = (type: string) => {
     const colors = {
-      High: "bg-red-100 text-red-800",
-      Medium: "bg-yellow-100 text-yellow-800",
-      Low: "bg-green-100 text-green-800",
+      renovasi: "bg-blue-100 text-blue-800",
+      instalasi: "bg-green-100 text-green-800", 
+      peralatan: "bg-yellow-100 text-yellow-800",
+      perlengkapan: "bg-purple-100 text-purple-800",
     }
-    return <Badge className={colors[priority as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{priority}</Badge>
+    return <Badge className={colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{type}</Badge>
   }
 
   const getProgressColor = (progress: number) => {
@@ -213,7 +170,7 @@ export default function ProjectsPage() {
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
@@ -226,36 +183,24 @@ export default function ProjectsPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-              <PlayCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{projectsData.filter((p) => p.status === "Running").length}</div>
-              <p className="text-xs text-muted-foreground">Currently running</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${(projectsData.reduce((sum, project) => sum + project.budget, 0) / 1000000).toFixed(1)}M
-              </div>
-              <p className="text-xs text-muted-foreground">Combined budget</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+              <CardTitle className="text-sm font-medium">Average Progress</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {Math.round(projectsData.reduce((sum, project) => sum + project.progress, 0) / projectsData.length)}%
               </div>
-              <p className="text-xs text-muted-foreground">Average progress</p>
+              <p className="text-xs text-muted-foreground">Overall completion</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Types</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{[...new Set(projectsData.map(p => p.type))].length}</div>
+              <p className="text-xs text-muted-foreground">Project types</p>
             </CardContent>
           </Card>
         </div>
@@ -276,27 +221,16 @@ export default function ProjectsPage() {
                   className="pl-8"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="running">Running</SelectItem>
-                  <SelectItem value="planning">Planning</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Priority</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="all">All Type</SelectItem>
+                  <SelectItem value="renovasi">Renovasi</SelectItem>
+                  <SelectItem value="instalasi">Instalasi</SelectItem>
+                  <SelectItem value="peralatan">Peralatan</SelectItem>
+                  <SelectItem value="perlengkapan">Perlengkapan</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -334,8 +268,7 @@ export default function ProjectsPage() {
                       </DropdownMenu>
                     </div>
                     <div className="flex items-center gap-2">
-                      {getStatusBadge(project.status)}
-                      {getPriorityBadge(project.priority)}
+                      {getTypeBadge(project.type)}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -353,8 +286,8 @@ export default function ProjectsPage() {
                         <p className="font-medium">{project.officer}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Budget</p>
-                        <p className="font-medium">${project.budget.toLocaleString()}</p>
+                        <p className="text-muted-foreground">Type</p>
+                        <p className="font-medium">{project.type}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Start Date</p>
@@ -373,9 +306,8 @@ export default function ProjectsPage() {
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="text-sm">
-                        <span className="text-muted-foreground">Spent: </span>
-                        <span className="font-medium">${project.spent.toLocaleString()}</span>
-                        <span className="text-muted-foreground"> / ${project.budget.toLocaleString()}</span>
+                        <span className="text-muted-foreground">Progress: </span>
+                        <span className="font-medium">{project.progress}%</span>
                       </div>
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/projects/${project.id}`}>View Details</Link>

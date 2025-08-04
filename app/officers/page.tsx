@@ -30,9 +30,7 @@ import {
   MoreHorizontal,
   Eye,
   Edit,
-  Mail,
   Phone,
-  MapPin,
   Calendar,
   Users,
   FolderOpen,
@@ -311,21 +309,9 @@ export default function OfficersPage() {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      {getStatusBadge(officer.status)}
-                      {getWorkloadBadge(officer.workload)}
-                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Department</p>
-                        <p className="font-medium">{officer.department}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Specialization</p>
-                        <p className="font-medium">{officer.specialization}</p>
-                      </div>
                       <div>
                         <p className="text-muted-foreground">Active Projects</p>
                         <p className="font-medium">{officer.activeProjects}</p>
@@ -340,16 +326,8 @@ export default function OfficersPage() {
 
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span>{officer.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <span>{officer.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{officer.location}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />

@@ -11,7 +11,10 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "UNDAGI | KARYA",
   description: "Comprehensive contractor and project management system for construction companies",
-    generator: 'PT GURITA BISNIS UNDAGI'
+  generator: 'PT GURITA BISNIS UNDAGI',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({

@@ -40,6 +40,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { isThisWeek } from "date-fns"
 
 const menuItems = [
   {
@@ -66,7 +67,10 @@ const menuItems = [
   },
   {
     title: "Officer Management",
-    url: "/officers",
+    items: [
+      { title: "All Officers", url: "/officers" },
+      { title: "Add Officer", url: "/officers/new" },
+    ],
     icon: UserCheck,
   },
   {
