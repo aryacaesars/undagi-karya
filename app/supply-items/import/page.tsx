@@ -1,0 +1,427 @@
+"use client"
+
+import type React from "react"
+
+import { useState, useRef } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge"
+import { Upload, Download, FileSpreadsheet, CheckCircle, AlertCircle, ArrowLeft, Trash2 } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+interface ImportItem {
+  id: string
+  name: string
+  category: string
+  unit: string
+  specifications: string
+  preferredVendor: string
+  status: "valid" | "error" | "warning"
+  errors: string[]
+}
+
+export default function ImportSupplyItemsPage() {
+  const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [importing, setImporting] = useState(false)
+  const [importProgress, setImportProgress] = useState(0)
+  const [previewData, setPreviewData] = useState<ImportItem[]>([])
+  const [importComplete, setImportComplete] = useState(false)
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0]
+    if (selectedFile) {
+      setFile(selectedFile)
+      // Simulate file parsing and preview
+      setTimeout(() => {
+        const mockPreviewData: ImportItem[] = [
+          {
+            id: "1",
+            name: "Steel I-Beam 25ft",
+            category: "Structural Steel",
+            unit: "piece",
+            specifications: "25ft length, Grade A36 steel",
+            preferredVendor: "Steel & Materials Co.",
+            status: "valid",
+            errors: [],
+          },
+          {
+            id: "2",
+            name: "Concrete Mix Premium",
+            category: "Concrete",
+            unit: "cubic yard",
+            specifications: "5000 PSI, Portland cement",
+            preferredVendor: "ConcreteMax Supplies",
+            status: "valid",
+            errors: [],
+          },
+          {
+            id: "3",
+            name: "Electrical Wire",
+            category: "Electrical",
+            unit: "",
+            specifications: "Missing specifications",
+            preferredVendor: "ElectricPro Supplies",
+            status: "error",
+            errors: ["Unit is required", "Specifications are required"],
+          },
+          {
+            id: "4",
+            name: "Plywood Sheet 4x8 Premium",
+            category: "Lumber",
+            unit: "sheet",
+            specifications: "4x8 feet, Grade A/A, marine grade",
+            preferredVendor: "",
+            status: "warning",
+            errors: ["Preferred vendor is missing"],
+          },
+        ]
+        setPreviewData(mockPreviewData)
+      }, 1000)
+    }
+  }
+
+  const handleImport = async () => {
+    setImporting(true)
+    setImportProgress(0)
+
+    // Simulate import progress
+    const interval = setInterval(() => {
+      setImportProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          setImporting(false)
+          setImportComplete(true)
+          return 100
+        }
+        return prev + 10
+      })
+    }, 200)
+  }
+
+  const removeItem = (id: string) => {
+    setPreviewData((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  const downloadTemplate = () => {
+    // Create CSV template
+    const csvContent = `Name,Category,Unit,Specifications,Preferred Vendor
+Steel I-Beam 20ft,Structural Steel,piece,"20ft length, Grade A36 steel",Steel & Materials Co.
+Concrete Mix,Concrete,cubic yard,"4000 PSI, Portland cement",ConcreteMax Supplies
+Electrical Wire 12 AWG,Electrical,foot,"THHN/THWN-2, 600V rated",ElectricPro Supplies`
+
+    const blob = new Blob([csvContent], { type: "text/csv" })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "supply_items_template.csv"
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const getStatusBadge = (status: string) => {
+    const config = {
+      valid: { color: "bg-green-100 text-green-800", icon: CheckCircle },
+      error: { color: "bg-red-100 text-red-800", icon: AlertCircle },
+      warning: { color: "bg-yellow-100 text-yellow-800", icon: AlertCircle },
+    }
+
+    const { color, icon: Icon } = config[status as keyof typeof config]
+
+    return (
+      <Badge className={color}>
+        <Icon className="w-3 h-3 mr-1" />
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
+    )
+  }
+
+  const validItems = previewData.filter((item) => item.status === "valid").length
+  const errorItems = previewData.filter((item) => item.status === "error").length
+  const warningItems = previewData.filter((item) => item.status === "warning").length
+
+  return (
+    <SidebarInset>
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/supply-items">Supply Items</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Import Items</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
+              <FileSpreadsheet className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Import Supply Items</h1>
+              <p className="text-muted-foreground">Import supply items from Excel or CSV files</p>
+            </div>
+          </div>
+          <Button variant="outline" asChild>
+            <Link href="/supply-items">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Supply Items
+            </Link>
+          </Button>
+        </div>
+
+        {!importComplete && (
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Upload File</CardTitle>
+                <CardDescription>
+                  Upload an Excel (.xlsx) or CSV (.csv) file containing supply items data
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="file">Select File</Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleFileSelect}
+                    ref={fileInputRef}
+                  />
+                </div>
+
+                {file && (
+                  <Alert>
+                    <FileSpreadsheet className="h-4 w-4" />
+                    <AlertDescription>
+                      Selected file: <strong>{file.name}</strong> ({(file.size / 1024).toFixed(1)} KB)
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex gap-2">
+                  <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="flex-1">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Choose File
+                  </Button>
+                  <Button onClick={downloadTemplate} variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>File Format Requirements</CardTitle>
+                <CardDescription>Your file should contain the following columns</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="font-medium">Required Columns:</div>
+                    <div></div>
+                    <div>• Name</div>
+                    <div>• Category</div>
+                    <div>• Unit</div>
+                    <div>• Specifications</div>
+                  </div>
+                  <Separator />
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="font-medium">Optional Columns:</div>
+                    <div></div>
+                    <div>• Preferred Vendor</div>
+                    <div></div>
+                  </div>
+                </div>
+
+                <Alert className="mt-4">
+                  <AlertDescription>
+                    <strong>Tip:</strong> Download the template file to see the exact format required.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {previewData.length > 0 && !importComplete && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Import Preview</CardTitle>
+                <CardDescription>Review the data before importing. Fix any errors shown below.</CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-green-100 text-green-800">{validItems} Valid</Badge>
+                {warningItems > 0 && <Badge className="bg-yellow-100 text-yellow-800">{warningItems} Warnings</Badge>}
+                {errorItems > 0 && <Badge className="bg-red-100 text-red-800">{errorItems} Errors</Badge>}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {importing && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Importing items...</span>
+                    <span className="text-sm text-muted-foreground">{importProgress}%</span>
+                  </div>
+                  <Progress value={importProgress} className="h-2" />
+                </div>
+              )}
+
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Unit</TableHead>
+                      <TableHead>Specifications</TableHead>
+                      <TableHead>Vendor</TableHead>
+                      <TableHead>Issues</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {previewData.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{getStatusBadge(item.status)}</TableCell>
+                        <TableCell className="font-medium">{item.name}</TableCell>
+                        <TableCell>{item.category}</TableCell>
+                        <TableCell>{item.unit || "-"}</TableCell>
+                        <TableCell className="max-w-[200px] truncate">{item.specifications || "-"}</TableCell>
+                        <TableCell>{item.preferredVendor || "-"}</TableCell>
+                        <TableCell>
+                          {item.errors.length > 0 && (
+                            <div className="space-y-1">
+                              {item.errors.map((error, index) => (
+                                <div key={index} className="text-xs text-red-600">
+                                  • {error}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItem(item.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-muted-foreground">
+                  {previewData.length} items ready for import
+                  {errorItems > 0 && (
+                    <span className="text-red-600 ml-2">({errorItems} items have errors and will be skipped)</span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setPreviewData([])}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleImport} disabled={importing || validItems === 0}>
+                    {importing ? "Importing..." : `Import ${validItems} Items`}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {importComplete && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Import Completed Successfully
+              </CardTitle>
+              <CardDescription>Your supply items have been imported successfully</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{validItems}</div>
+                    <div className="text-sm text-muted-foreground">Items Imported</div>
+                  </div>
+                  {warningItems > 0 && (
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-yellow-600">{warningItems}</div>
+                      <div className="text-sm text-muted-foreground">With Warnings</div>
+                    </div>
+                  )}
+                  {errorItems > 0 && (
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-red-600">{errorItems}</div>
+                      <div className="text-sm text-muted-foreground">Skipped (Errors)</div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button asChild>
+                    <Link href="/supply-items">View Supply Items</Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setImportComplete(false)
+                      setPreviewData([])
+                      setFile(null)
+                      setImportProgress(0)
+                    }}
+                  >
+                    Import More Items
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </SidebarInset>
+  )
+}
