@@ -24,6 +24,14 @@ import { ClipboardList, Save, ArrowLeft, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+const projectOfficersData = [
+  { id: 1, name: "John Smith", role: "Senior Project Manager" },
+  { id: 2, name: "Maria Rodriguez", role: "Construction Supervisor" },
+  { id: 3, name: "David Chen", role: "Site Engineer" },
+  { id: 4, name: "Sarah Johnson", role: "Project Coordinator" },
+  { id: 5, name: "Michael Lee", role: "Technical Lead" },
+]
+
 const supplyItemsData = [
   {
     id: 1,
@@ -76,6 +84,7 @@ export default function NewFormPage() {
   const [formData, setFormData] = useState({
     project: "",
     type: "",
+    projectOfficer: "",
     description: "",
     notes: "",
   })
@@ -234,6 +243,31 @@ export default function NewFormPage() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="projectOfficer">Project Officer *</Label>
+                <Select
+                  value={formData.projectOfficer}
+                  onValueChange={(value) => handleInputChange("projectOfficer", value)}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select project officer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projectOfficersData.map((officer) => (
+                      <SelectItem key={officer.id} value={officer.name}>
+                        <div className="flex flex-col">
+                          <span>{officer.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {officer.role}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Input
