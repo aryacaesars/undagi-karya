@@ -71,12 +71,11 @@ interface RequestItem {
   notes: string
 }
 
-export default function NewSupplyRequestPage() {
+export default function NewFormPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
     project: "",
-    priority: "",
-    vendor: "",
+    type: "",
     description: "",
     notes: "",
   })
@@ -140,9 +139,9 @@ export default function NewSupplyRequestPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Creating supply request:", { ...formData, items })
+    console.log("Creating form:", { ...formData, items })
     setTimeout(() => {
-      router.push("/supply-requests")
+      router.push("/forms")
     }, 1000)
   }
 
@@ -159,11 +158,11 @@ export default function NewSupplyRequestPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/supply-requests">Supply Requests</BreadcrumbLink>
+                <BreadcrumbLink href="/forms">Forms</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>New Request</BreadcrumbPage>
+                <BreadcrumbPage>New Form</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -177,14 +176,14 @@ export default function NewSupplyRequestPage() {
               <ClipboardList className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Create Supply Request</h1>
-              <p className="text-muted-foreground">Request materials and equipment for your construction projects</p>
+              <h1 className="text-2xl font-bold tracking-tight">Create Form</h1>
+              <p className="text-muted-foreground">Submit a new form for your project requirements</p>
             </div>
           </div>
           <Button variant="outline" asChild>
-            <Link href="/supply-requests">
+            <Link href="/forms">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Requests
+              Back to Forms
             </Link>
           </Button>
         </div>
@@ -192,8 +191,8 @@ export default function NewSupplyRequestPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Request Information</CardTitle>
-              <CardDescription>Enter the basic details for the supply request</CardDescription>
+              <CardTitle>Form Information</CardTitle>
+              <CardDescription>Enter the basic details for your form</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -216,47 +215,32 @@ export default function NewSupplyRequestPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="priority">Priority *</Label>
+                  <Label htmlFor="type">Type *</Label>
                   <Select
-                    value={formData.priority}
-                    onValueChange={(value) => handleInputChange("priority", value)}
+                    value={formData.type}
+                    onValueChange={(value) => handleInputChange("type", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="renovasi">Renovasi</SelectItem>
+                      <SelectItem value="instalasi">Instalasi</SelectItem>
+                      <SelectItem value="perlengkapan">Perlengkapan</SelectItem>
+                      <SelectItem value="peralatan">Peralatan</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="vendor">Preferred Vendor</Label>
-                <Select value={formData.vendor} onValueChange={(value) => handleInputChange("vendor", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vendor (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="steel-materials">Steel & Materials Co.</SelectItem>
-                    <SelectItem value="buildpro">BuildPro Supplies</SelectItem>
-                    <SelectItem value="heavy-equipment">Heavy Equipment Rentals</SelectItem>
-                    <SelectItem value="green-materials">Green Materials Inc.</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="description">Description</Label>
                 <Input
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Brief description of the request"
-                  required
+                  placeholder="Brief description of the request (optional)"
                 />
               </div>
 
@@ -276,8 +260,8 @@ export default function NewSupplyRequestPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Request Items</CardTitle>
-                <CardDescription>Add materials and equipment to your request</CardDescription>
+                <CardTitle>Form Items</CardTitle>
+                <CardDescription>Add items to your form</CardDescription>
               </div>
               <Button type="button" onClick={addItem} variant="outline">
                 <Plus className="mr-2 h-4 w-4" />
@@ -384,10 +368,10 @@ export default function NewSupplyRequestPage() {
           <div className="flex items-center gap-4">
             <Button type="submit" className="flex-1 max-w-xs">
               <Save className="mr-2 h-4 w-4" />
-              Create Request
+              Submit Form
             </Button>
             <Button type="button" variant="outline" asChild>
-              <Link href="/supply-requests">Cancel</Link>
+              <Link href="/forms">Cancel</Link>
             </Button>
           </div>
         </form>

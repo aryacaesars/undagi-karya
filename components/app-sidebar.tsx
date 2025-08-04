@@ -11,6 +11,8 @@ import {
   Shield,
   Home,
   ChevronDown,
+  Boxes,
+  BoxIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -75,16 +77,26 @@ const menuItems = [
   },
   {
     title: "Vendor Management",
-    url: "/vendors",
+    items: [
+      { title: "All Vendors", url: "/vendors" },
+      { title: "Add Vendor", url: "/vendors/new" },
+    ],
     icon: Truck,
   },
   {
     title: "Supply Management",
+    icon: BoxIcon,
+    items: [
+      { title: "Supply Items", url: "/supply-items" },
+      { title: "Import Supply", url: "/supply-items/import" },
+    ],
+  },
+  {
+    title: "Forms & Documents",
     icon: ClipboardList,
     items: [
-      { title: "Supply Requests", url: "/supply-requests" },
-      { title: "Supply Items", url: "/supply-items" },
-      { title: "New Request", url: "/supply-requests/new" },
+      { title: "All Forms", url: "/forms" },
+      { title: "Create Form", url: "/forms/new" },
     ],
   },
   {

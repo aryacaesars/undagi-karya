@@ -21,70 +21,76 @@ import {
   Phone,
   MapPin,
   Calendar,
-  FolderOpen,
+  DollarSign,
+  ShoppingBag,
   Edit,
   Plus,
   Eye,
-  CheckCircle,
+  Clock,
+  Truck,
+  Package,
 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 
 // Mock data - in real app this would come from API
-const clientData = {
+const vendorData = {
   id: 1,
-  name: "MegaBuild Corporation",
-  phone: "+1 (555) 123-4567",
-  address: "123 Business District, New York, NY 10001",
-  joinDate: "2023-01-15",
-  description:
-    "Leading construction company specializing in large-scale commercial projects and infrastructure development.",
-  contactPerson: "Robert Johnson",
-  totalProjects: 12,
-  activeProjects: 3,
-  completedProjects: 9,
+  name: "Steel & Materials Co.",
+  phone: "+1 (555) 111-2222",
+  address: "123 Industrial Ave, New York, NY",
+  totalOrders: 45,
+  paymentTerms: "Net 30",
+  joinDate: "2022-03-15",
+  lastOrder: "2023-08-10",
+  contactPerson: "James Wilson",
+  description: "Leading supplier of high-quality construction materials for commercial and residential projects."
 }
 
-const projectHistory = [
+const orderHistory = [
   {
     id: 1,
-    name: "Downtown Mall Phase 2",
-    progress: 75,
-    startDate: "2023-03-15",
-    endDate: "2024-01-30",
-    officer: "John Smith",
+    product: "Steel Beams (I-Beam 8\")",
+    quantity: 24,
+    orderDate: "2023-07-15",
+    deliveryDate: "2023-07-25",
+    project: "Downtown Mall Phase 2"
   },
   {
     id: 2,
-    name: "Corporate Office Building",
-    progress: 100,
-    startDate: "2022-08-01",
-    endDate: "2023-02-28",
-    officer: "Sarah Johnson",
+    product: "Concrete Mix (Premium)",
+    quantity: 150,
+    orderDate: "2023-06-02",
+    deliveryDate: "2023-06-10",
+    project: "Corporate Office Building"
   },
   {
     id: 3,
-    name: "Warehouse Expansion",
-    progress: 45,
-    startDate: "2023-06-10",
-    endDate: "2023-12-15",
-    officer: "Mike Wilson",
+    product: "Rebar (#5 60' lengths)",
+    quantity: 80,
+    orderDate: "2023-08-01",
+    deliveryDate: "2023-08-12",
+    project: "Warehouse Expansion"
   },
   {
     id: 4,
-    name: "Parking Structure",
-    progress: 100,
-    startDate: "2022-03-01",
-    endDate: "2022-09-30",
-    officer: "Emily Davis",
+    product: "Concrete Forms",
+    quantity: 35,
+    orderDate: "2023-05-20",
+    deliveryDate: "2023-06-01",
+    project: "Parking Structure"
   },
 ]
 
-export default function ClientDetailPage() {
+export default function VendorDetailPage() {
   const params = useParams()
-  const clientId = params.id
+  const vendorId = params.id
 
-  // Function removed
+
+  
+  // Rating stars function removed
+  
+  // Category badge function removed
 
   return (
     <SidebarInset>
@@ -99,11 +105,11 @@ export default function ClientDetailPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/clients">Clients</BreadcrumbLink>
+                <BreadcrumbLink href="/vendors">Vendors</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>{clientData.name}</BreadcrumbPage>
+                <BreadcrumbPage>{vendorData.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -114,21 +120,21 @@ export default function ClientDetailPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-              <Building2 className="h-6 w-6 text-blue-600" />
+              <Truck className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">{clientData.name}</h1>
+              <h1 className="text-2xl font-bold tracking-tight">{vendorData.name}</h1>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Client
+              Edit Vendor
             </Button>
             <Button asChild>
-              <Link href="/projects/new">
+              <Link href="/supply-requests/new">
                 <Plus className="mr-2 h-4 w-4" />
-                New Project
+                New Order
               </Link>
             </Button>
           </div>
@@ -137,24 +143,22 @@ export default function ClientDetailPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-              <FolderOpen className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{clientData.totalProjects}</div>
-              <p className="text-xs text-muted-foreground">{clientData.activeProjects} active</p>
+              <div className="text-2xl font-bold">{vendorData.totalOrders}</div>
+              <p className="text-xs text-muted-foreground">All time purchases</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Payment Terms</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {Math.round((clientData.completedProjects / clientData.totalProjects) * 100)}%
-              </div>
-              <p className="text-xs text-muted-foreground">Completion rate</p>
+              <div className="text-2xl font-bold">{vendorData.paymentTerms}</div>
+              <p className="text-xs text-muted-foreground">Standard terms</p>
             </CardContent>
           </Card>
         </div>
@@ -162,50 +166,61 @@ export default function ClientDetailPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="md:col-span-2">
             <CardHeader>
-              <CardTitle>Client Information</CardTitle>
-              <CardDescription>Detailed information about the client</CardDescription>
+              <CardTitle>Vendor Information</CardTitle>
+              <CardDescription>Detailed information about the vendor</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-4">
+
                   <div className="flex items-center gap-3">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Phone</p>
-                      <p className="text-sm text-muted-foreground">{clientData.phone}</p>
+                      <p className="text-sm text-muted-foreground">{vendorData.phone}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Address</p>
-                      <p className="text-sm text-muted-foreground">{clientData.address}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Building2 className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">Contact Person</p>
-                      <p className="text-sm text-muted-foreground">{clientData.contactPerson}</p>
+                      <p className="text-sm text-muted-foreground">{vendorData.address}</p>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
+                    <Building2 className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Contact Person</p>
+                      <p className="text-sm text-muted-foreground">{vendorData.contactPerson}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Join Date</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(clientData.joinDate).toLocaleDateString()}
+                        {new Date(vendorData.joinDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Last Order</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(vendorData.lastOrder).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
               <Separator />
+
               <div>
                 <p className="text-sm font-medium mb-2">Description</p>
-                <p className="text-sm text-muted-foreground">{clientData.description}</p>
+                <p className="text-sm text-muted-foreground">{vendorData.description}</p>
               </div>
             </CardContent>
           </Card>
@@ -213,26 +228,26 @@ export default function ClientDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common actions for this client</CardDescription>
+              <CardDescription>Common actions for this vendor</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button className="w-full justify-start" asChild>
-                <Link href="/projects/new">
+                <Link href="/supply-requests/new">
                   <Plus className="mr-2 h-4 w-4" />
-                  Create New Project
+                  Create New Order
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <Mail className="mr-2 h-4 w-4" />
-                Send Message
+                Send Inquiry
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Client Info
+                Edit Vendor Info
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
-                <FolderOpen className="mr-2 h-4 w-4" />
-                View All Projects
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                View All Orders
               </Button>
             </CardContent>
           </Card>
@@ -240,43 +255,42 @@ export default function ClientDetailPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Project History</CardTitle>
-            <CardDescription>All projects associated with this client</CardDescription>
+            <CardTitle>Order History</CardTitle>
+            <CardDescription>Purchase orders from this vendor</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Project Name</TableHead>
-                    <TableHead>Progress</TableHead>
-                    <TableHead>Officer</TableHead>
-                    <TableHead>Timeline</TableHead>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Project</TableHead>
+                    <TableHead>Order Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {projectHistory.map((project) => (
-                    <TableRow key={project.id}>
-                      <TableCell className="font-medium">{project.name}</TableCell>
+                  {orderHistory.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-medium">{order.product}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={project.progress} className="w-16 h-2" />
-                          <span className="text-sm">{project.progress}%</span>
-                        </div>
+                        <Badge variant="outline">{order.quantity} units</Badge>
                       </TableCell>
-                      <TableCell>{project.officer}</TableCell>
+                      <TableCell>{order.project}</TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <div>{new Date(project.startDate).toLocaleDateString()}</div>
-                          <div className="text-muted-foreground">
-                            to {new Date(project.endDate).toLocaleDateString()}
-                          </div>
+                          <div>{new Date(order.orderDate).toLocaleDateString()}</div>
+                          {order.deliveryDate && (
+                            <div className="text-muted-foreground">
+                              Delivery: {new Date(order.deliveryDate).toLocaleDateString()}
+                            </div>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/projects/${project.id}`}>
+                          <Link href={`/supply-requests/${order.id}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>

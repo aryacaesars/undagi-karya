@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Building2, Calendar, DollarSign } from "lucide-react"
+import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Building2, Calendar } from "lucide-react"
 import Link from "next/link"
 
 const clientsData = [
@@ -35,8 +35,6 @@ const clientsData = [
     phone: "+1 (555) 123-4567",
     joinDate: "2023-01-15",
     projectsCount: 12,
-    totalValue: 850000,
-    status: "Active",
     lastProject: "Downtown Mall Phase 2",
   },
   {
@@ -45,8 +43,6 @@ const clientsData = [
     phone: "+1 (555) 234-5678",
     joinDate: "2023-03-22",
     projectsCount: 8,
-    totalValue: 620000,
-    status: "Active",
     lastProject: "Residential Complex A",
   },
   {
@@ -55,8 +51,6 @@ const clientsData = [
     phone: "+1 (555) 345-6789",
     joinDate: "2022-11-08",
     projectsCount: 15,
-    totalValue: 1200000,
-    status: "Active",
     lastProject: "Highway Bridge Renovation",
   },
   {
@@ -65,8 +59,6 @@ const clientsData = [
     phone: "+1 (555) 456-7890",
     joinDate: "2023-05-10",
     projectsCount: 6,
-    totalValue: 480000,
-    status: "Active",
     lastProject: "Eco-Friendly Office Building",
   },
   {
@@ -75,8 +67,6 @@ const clientsData = [
     phone: "+1 (555) 567-8901",
     joinDate: "2023-07-18",
     projectsCount: 2,
-    totalValue: 125000,
-    status: "Active",
     lastProject: "Home Renovation",
   },
   {
@@ -85,32 +75,20 @@ const clientsData = [
     phone: "+1 (555) 678-9012",
     joinDate: "2023-02-28",
     projectsCount: 9,
-    totalValue: 750000,
-    status: "Inactive",
     lastProject: "Shopping Center Expansion",
   },
 ]
 
 export default function ClientsPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
 
   const filteredClients = clientsData.filter((client) => {
     const matchesSearch =
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.phone.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || client.status.toLowerCase() === statusFilter
 
-    return matchesSearch && matchesStatus
+    return matchesSearch
   })
-
-  const getStatusBadge = (status: string) => {
-    return status === "Active" ? (
-      <Badge className="bg-green-100 text-green-800">Active</Badge>
-    ) : (
-      <Badge variant="secondary">Inactive</Badge>
-    )
-  }
 
   return (
     <SidebarInset>
@@ -146,7 +124,7 @@ export default function ClientsPage() {
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
@@ -155,7 +133,7 @@ export default function ClientsPage() {
             <CardContent>
               <div className="text-2xl font-bold">{clientsData.length}</div>
               <p className="text-xs text-muted-foreground">
-                {clientsData.filter((c) => c.status === "Active").length} active
+                Registered clients
               </p>
             </CardContent>
           </Card>
@@ -169,30 +147,6 @@ export default function ClientsPage() {
                 {clientsData.reduce((sum, client) => sum + client.projectsCount, 0)}
               </div>
               <p className="text-xs text-muted-foreground">All client projects</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${(clientsData.reduce((sum, client) => sum + client.totalValue, 0) / 1000000).toFixed(1)}M
-              </div>
-              <p className="text-xs text-muted-foreground">Combined project value</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Project</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${Math.round(clientsData.reduce((sum, client) => sum + client.totalValue, 0) / clientsData.reduce((sum, client) => sum + client.projectsCount, 0) / 1000)}K
-              </div>
-              <p className="text-xs text-muted-foreground">Per project value</p>
             </CardContent>
           </Card>
         </div>
@@ -213,16 +167,6 @@ export default function ClientsPage() {
                   className="pl-8"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="rounded-md border">
@@ -232,8 +176,6 @@ export default function ClientsPage() {
                     <TableHead>Client</TableHead>
                     <TableHead>Contact</TableHead>
                     <TableHead>Projects</TableHead>
-                    <TableHead>Total Value</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead>Join Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -260,8 +202,6 @@ export default function ClientsPage() {
                         <TableCell>
                           <Badge variant="outline">{client.projectsCount} projects</Badge>
                         </TableCell>
-                        <TableCell>${client.totalValue.toLocaleString()}</TableCell>
-                        <TableCell>{getStatusBadge(client.status)}</TableCell>
                         <TableCell>{new Date(client.joinDate).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>

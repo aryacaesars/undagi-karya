@@ -28,10 +28,8 @@ import { useRouter } from "next/navigation"
 interface ImportItem {
   id: string
   name: string
-  category: string
   unit: string
   specifications: string
-  preferredVendor: string
   status: "valid" | "error" | "warning"
   errors: string[]
 }
@@ -55,42 +53,34 @@ export default function ImportSupplyItemsPage() {
           {
             id: "1",
             name: "Steel I-Beam 25ft",
-            category: "Structural Steel",
             unit: "piece",
             specifications: "25ft length, Grade A36 steel",
-            preferredVendor: "Steel & Materials Co.",
             status: "valid",
             errors: [],
           },
           {
             id: "2",
             name: "Concrete Mix Premium",
-            category: "Concrete",
             unit: "cubic yard",
             specifications: "5000 PSI, Portland cement",
-            preferredVendor: "ConcreteMax Supplies",
             status: "valid",
             errors: [],
           },
           {
             id: "3",
             name: "Electrical Wire",
-            category: "Electrical",
             unit: "",
             specifications: "Missing specifications",
-            preferredVendor: "ElectricPro Supplies",
             status: "error",
-            errors: ["Unit is required", "Specifications are required"],
+            errors: ["Specifications are required"],
           },
           {
             id: "4",
             name: "Plywood Sheet 4x8 Premium",
-            category: "Lumber",
             unit: "sheet",
             specifications: "4x8 feet, Grade A/A, marine grade",
-            preferredVendor: "",
-            status: "warning",
-            errors: ["Preferred vendor is missing"],
+            status: "valid",
+            errors: [],
           },
         ]
         setPreviewData(mockPreviewData)
@@ -122,10 +112,10 @@ export default function ImportSupplyItemsPage() {
 
   const downloadTemplate = () => {
     // Create CSV template
-    const csvContent = `Name,Category,Unit,Specifications,Preferred Vendor
-Steel I-Beam 20ft,Structural Steel,piece,"20ft length, Grade A36 steel",Steel & Materials Co.
-Concrete Mix,Concrete,cubic yard,"4000 PSI, Portland cement",ConcreteMax Supplies
-Electrical Wire 12 AWG,Electrical,foot,"THHN/THWN-2, 600V rated",ElectricPro Supplies`
+    const csvContent = `Name,Unit,Specifications
+Steel I-Beam 20ft,piece,"20ft length, Grade A36 steel"
+Concrete Mix,cubic yard,"4000 PSI, Portland cement"
+Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
 
     const blob = new Blob([csvContent], { type: "text/csv" })
     const url = window.URL.createObjectURL(blob)
@@ -254,16 +244,13 @@ Electrical Wire 12 AWG,Electrical,foot,"THHN/THWN-2, 600V rated",ElectricPro Sup
                     <div className="font-medium">Required Columns:</div>
                     <div></div>
                     <div>• Name</div>
-                    <div>• Category</div>
-                    <div>• Unit</div>
-                    <div>• Specifications</div>
                   </div>
                   <Separator />
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="font-medium">Optional Columns:</div>
                     <div></div>
-                    <div>• Preferred Vendor</div>
-                    <div></div>
+                    <div>• Unit</div>
+                    <div>• Specifications</div>
                   </div>
                 </div>
 
@@ -307,10 +294,8 @@ Electrical Wire 12 AWG,Electrical,foot,"THHN/THWN-2, 600V rated",ElectricPro Sup
                     <TableRow>
                       <TableHead>Status</TableHead>
                       <TableHead>Name</TableHead>
-                      <TableHead>Category</TableHead>
                       <TableHead>Unit</TableHead>
                       <TableHead>Specifications</TableHead>
-                      <TableHead>Vendor</TableHead>
                       <TableHead>Issues</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -320,10 +305,8 @@ Electrical Wire 12 AWG,Electrical,foot,"THHN/THWN-2, 600V rated",ElectricPro Sup
                       <TableRow key={item.id}>
                         <TableCell>{getStatusBadge(item.status)}</TableCell>
                         <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell>{item.category}</TableCell>
                         <TableCell>{item.unit || "-"}</TableCell>
                         <TableCell className="max-w-[200px] truncate">{item.specifications || "-"}</TableCell>
-                        <TableCell>{item.preferredVendor || "-"}</TableCell>
                         <TableCell>
                           {item.errors.length > 0 && (
                             <div className="space-y-1">
