@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,9 +20,13 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ClipboardList, Save, ArrowLeft, Plus, Trash2 } from "lucide-react"
+import { ClipboardList, Save, ArrowLeft, Plus, Trash2, FileDown } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import dynamic from "next/dynamic"
+import { PDFDownloader, PDFPreviewerWrapper } from "@/components/pdf-renderer"
+import { DownloadPDFButton } from "@/components/download-pdf-button"
+import ErrorBoundary from "@/components/error-boundary"
 
 const projectOfficersData = [
   { id: 1, name: "John Smith", role: "Senior Project Manager" },
@@ -70,7 +74,7 @@ const supplyItemsData = [
   },
 ]
 
-interface RequestItem {
+export interface RequestItem {
   id: string
   itemName: string
   quantity: number
@@ -146,12 +150,56 @@ export default function NewFormPage() {
     setItems((prev) => prev.filter((item) => item.id !== id))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPdfPreview, setShowPdfPreview] = useState(false)
+  const [useFallbackPdf, setUseFallbackPdf] = useState(false)
+  const formSubmittedData = useRef({
+    formData: { ...formData },
+    items: [...items]
+  })
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Creating form:", { ...formData, items })
-    setTimeout(() => {
-      router.push("/forms")
-    }, 1000)
+    setIsSubmitting(true)
+    
+    try {
+      console.log("Creating form:", { ...formData, items })
+      
+      // Save the current form data for PDF generation
+      formSubmittedData.current = {
+        formData: { ...formData },
+        items: [...items]
+      }
+      
+      try {
+        // Show PDF preview/download
+        setShowPdfPreview(true)
+        
+        // If there's any error with the PDF components, we'll use the fallback
+        window.addEventListener('error', (e) => {
+          if (e.message?.includes('react-pdf') || e.message?.includes('@react-pdf')) {
+            console.error('PDF error detected, using fallback method:', e)
+            setUseFallbackPdf(true)
+          }
+        }, { once: true })
+      } catch (pdfError) {
+        console.error("Error with PDF preview:", pdfError)
+        setUseFallbackPdf(true)
+      }
+      
+      // Optional: You could send the data to your backend here
+      // const response = await fetch('/api/forms', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ ...formData, items })
+      // })
+      
+      // No automatic redirect - user must manually close the PDF preview
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -400,15 +448,96 @@ export default function NewFormPage() {
           </Card>
 
           <div className="flex items-center gap-4">
-            <Button type="submit" className="flex-1 max-w-xs">
+            <Button type="submit" className="flex-1 max-w-xs" disabled={isSubmitting}>
               <Save className="mr-2 h-4 w-4" />
-              Submit Form
+              {isSubmitting ? 'Submitting...' : 'Submit Form'}
             </Button>
-            <Button type="button" variant="outline" asChild>
+            <Button type="button" variant="outline" asChild disabled={isSubmitting}>
               <Link href="/forms">Cancel</Link>
             </Button>
+            
+            {/* Fallback PDF download button (shown if there are issues with the PDF viewer) */}
+            {useFallbackPdf && (
+              <DownloadPDFButton
+                formData={formSubmittedData.current.formData}
+                items={formSubmittedData.current.items}
+              />
+            )}
           </div>
         </form>
+
+        {/* PDF Preview Dialog */}
+        {showPdfPreview && !useFallbackPdf && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-[90vw] h-[90vh] flex flex-col">
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-xl font-bold">Form PDF Preview</h3>
+                <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
+                    <PDFDownloader
+                      formData={formSubmittedData.current.formData}
+                      items={formSubmittedData.current.items}
+                    />
+                    <Button variant="ghost" onClick={() => {
+                      setShowPdfPreview(false);
+                      // If the user closes the preview, show the fallback button
+                      setUseFallbackPdf(true);
+                    }}>
+                      Close
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        router.push("/forms");
+                      }}
+                    >
+                      Return to Forms
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 overflow-auto p-4">
+                <ErrorBoundary fallback={
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <p className="text-red-500 mb-4">There was an error displaying the PDF preview.</p>
+                    <DownloadPDFButton
+                      formData={formSubmittedData.current.formData}
+                      items={formSubmittedData.current.items}
+                    />
+                  </div>
+                }>
+                  <PDFPreviewerWrapper
+                    formData={formSubmittedData.current.formData}
+                    items={formSubmittedData.current.items}
+                  />
+                </ErrorBoundary>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Simple success message when using fallback */}
+        {useFallbackPdf && (
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+            <div className="flex flex-col gap-3">
+              <p className="text-green-700">Form submitted successfully! Click the "Download PDF" button to save your form.</p>
+              <div className="flex gap-3">
+                <DownloadPDFButton
+                  formData={formSubmittedData.current.formData}
+                  items={formSubmittedData.current.items}
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    router.push("/forms");
+                  }}
+                >
+                  Return to Forms
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </SidebarInset>
   )
