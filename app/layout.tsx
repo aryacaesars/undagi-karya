@@ -9,9 +9,9 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ContractorPro - Construction Management System",
+  title: "UNDAGI | KARYA",
   description: "Comprehensive contractor and project management system for construction companies",
-    generator: 'v0.dev'
+    generator: 'PT GURITA BISNIS UNDAGI'
 }
 
 export default function RootLayout({

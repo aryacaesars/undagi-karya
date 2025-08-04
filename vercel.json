@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "nodejs": "20.x",
+  "functions": {
+    "app/**/*.{js,ts,tsx}": {
+      "maxDuration": 10
+    }
+  },
+  "outputDirectory": ".next"
+}
