@@ -1,8 +1,8 @@
 import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
 import type { RequestItem } from '@/app/forms/new/page';
 
-// Base64 placeholder logo (a simple square) to avoid image loading issues
-const PLACEHOLDER_LOGO = '/Logo.svg';
+// Placeholder logo (PNG, must match actual file name in public/)
+const PLACEHOLDER_LOGO = '/logo.png';
 
 // Base64 placeholder signature image (will be replaced with the actual image from public folder)
 const SIGNATURE_IMAGE = '/ttd.png';
