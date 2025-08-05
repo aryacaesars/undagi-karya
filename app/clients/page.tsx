@@ -99,11 +99,11 @@ export default function ClientsPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Clients</BreadcrumbPage>
+                <BreadcrumbPage>Klien</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -113,13 +113,13 @@ export default function ClientsPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Client Management</h1>
-            <p className="text-muted-foreground">Manage your clients and track their project history</p>
+            <h1 className="text-2xl font-bold tracking-tight">Manajemen Klien</h1>
+            <p className="text-muted-foreground">Kelola klien Anda dan lacak riwayat proyek mereka</p>
           </div>
           <Button asChild>
             <Link href="/clients/new">
               <Plus className="mr-2 h-4 w-4" />
-              Add Client
+              Tambah Klien
             </Link>
           </Button>
         </div>
@@ -127,41 +127,41 @@ export default function ClientsPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Klien</CardTitle>
               <Building2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{clientsData.length}</div>
               <p className="text-xs text-muted-foreground">
-                Registered clients
+                Klien terdaftar
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Proyek</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {clientsData.reduce((sum, client) => sum + client.projectsCount, 0)}
               </div>
-              <p className="text-xs text-muted-foreground">All client projects</p>
+              <p className="text-xs text-muted-foreground">Semua proyek klien</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Clients</CardTitle>
-            <CardDescription>A list of all clients with their project information and status</CardDescription>
+            <CardTitle>Semua Klien</CardTitle>
+            <CardDescription>Daftar semua klien dengan informasi proyek dan status mereka</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search clients..."
+                  placeholder="Cari klien..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -173,17 +173,17 @@ export default function ClientsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Projects</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Klien</TableHead>
+                    <TableHead>Kontak</TableHead>
+                    <TableHead>Proyek</TableHead>
+                    <TableHead>Tanggal Bergabung</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredClients.length === 0 ? (
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground">No clients found matching your criteria.</p>
+                      <p className="text-muted-foreground">Tidak ada klien yang ditemukan sesuai kriteria Anda.</p>
                     </div>
                   ) : (
                     filteredClients.map((client) => (
@@ -191,7 +191,7 @@ export default function ClientsPage() {
                         <TableCell>
                           <div>
                             <div className="font-medium">{client.name}</div>
-                            <div className="text-sm text-muted-foreground">Last: {client.lastProject}</div>
+                            <div className="text-sm text-muted-foreground">Terakhir: {client.lastProject}</div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -200,33 +200,33 @@ export default function ClientsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{client.projectsCount} projects</Badge>
+                          <Badge variant="outline">{client.projectsCount} proyek</Badge>
                         </TableCell>
                         <TableCell>{new Date(client.joinDate).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">Buka menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                               <DropdownMenuItem asChild>
                                 <Link href={`/clients/${client.id}`}>
                                   <Eye className="mr-2 h-4 w-4" />
-                                  View Details
+                                  Lihat Detail
                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem>
                                 <Edit className="mr-2 h-4 w-4" />
-                                Edit Client
+                                Edit Klien
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem className="text-red-600">
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Client
+                                Hapus Klien
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>

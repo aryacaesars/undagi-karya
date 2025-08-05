@@ -131,12 +131,12 @@ export default function OfficerDetailPage() {
       <SidebarInset>
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
-            <h2 className="text-2xl font-bold">Officer Not Found</h2>
-            <p className="text-muted-foreground mt-2">The officer you're looking for doesn't exist.</p>
+            <h2 className="text-2xl font-bold">Petugas Tidak Ditemukan</h2>
+            <p className="text-muted-foreground mt-2">Petugas yang Anda cari tidak ada.</p>
             <Button asChild className="mt-4">
               <Link href="/officers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Officers
+                Kembali ke Petugas
               </Link>
             </Button>
           </div>
@@ -148,9 +148,9 @@ export default function OfficerDetailPage() {
 
   const getProjectStatusBadge = (status: string) => {
     return status === "Active" ? (
-      <Badge className="bg-blue-100 text-blue-800">Active</Badge>
+      <Badge className="bg-blue-100 text-blue-800">Aktif</Badge>
     ) : (
-      <Badge className="bg-green-100 text-green-800">Completed</Badge>
+      <Badge className="bg-green-100 text-green-800">Selesai</Badge>
     )
   }
 
@@ -163,11 +163,11 @@ export default function OfficerDetailPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/officers">Officers</BreadcrumbLink>
+                <BreadcrumbLink href="/officers">Petugas</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
@@ -183,30 +183,30 @@ export default function OfficerDetailPage() {
           <Button variant="ghost" asChild>
             <Link href="/officers">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Officers
+              Kembali ke Petugas
             </Link>
           </Button>
           <div className="flex items-center gap-2">
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Officer
+              Edit Petugas
             </Button>
             <Dialog>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Assign Project
+                  Tugaskan Proyek
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Assign Project to {officer.name}</DialogTitle>
+                  <DialogTitle>Tugaskan Proyek ke {officer.name}</DialogTitle>
                   <DialogDescription>
-                    Select a project to assign to this officer.
+                    Pilih proyek untuk ditugaskan ke petugas ini.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="py-4">
-                  <p className="text-sm text-muted-foreground">Project assignment functionality would be implemented here.</p>
+                  <p className="text-sm text-muted-foreground">Fitur penugasan proyek akan diimplementasikan di sini.</p>
                 </div>
               </DialogContent>
             </Dialog>
@@ -235,28 +235,28 @@ export default function OfficerDetailPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Phone</span>
+                  <span className="text-sm font-medium">Telepon</span>
                 </div>
                 <p>{officer.phone}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Join Date</span>
+                  <span className="text-sm font-medium">Tanggal Bergabung</span>
                 </div>
                 <p>{new Date(officer.joinDate).toLocaleDateString()}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Active Projects</span>
+                  <span className="text-sm font-medium">Proyek Aktif</span>
                 </div>
                 <p className="text-2xl font-bold">{officer.activeProjects}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Completed Projects</span>
+                  <span className="text-sm font-medium">Proyek Selesai</span>
                 </div>
                 <p className="text-2xl font-bold">{officer.completedProjects}</p>
               </div>
@@ -269,12 +269,12 @@ export default function OfficerDetailPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Assigned Projects</CardTitle>
-                <CardDescription>Projects currently assigned to {officer.name}</CardDescription>
+                <CardTitle>Proyek yang Ditugaskan</CardTitle>
+                <CardDescription>Proyek yang saat ini ditugaskan ke {officer.name}</CardDescription>
               </div>
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                Assign New Project
+                Tugaskan Proyek Baru
               </Button>
             </div>
           </CardHeader>
@@ -291,10 +291,10 @@ export default function OfficerDetailPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
                           <div>
-                            <span className="font-medium">Progress:</span> {project.progress}%
+                            <span className="font-medium">Progres:</span> {project.progress}%
                           </div>
                           <div>
-                            <span className="font-medium">Deadline:</span> {new Date(project.deadline).toLocaleDateString()}
+                            <span className="font-medium">Tenggat:</span> {new Date(project.deadline).toLocaleDateString()}
                           </div>
                         </div>
                       </div>

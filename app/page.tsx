@@ -46,36 +46,36 @@ import {
 
 const statsData = [
   {
-    title: "Total Clients",
+    title: "Total Klien",
     value: "248",
     change: "+12%",
     trend: "up",
     icon: Users,
-    description: "Active clients",
+    description: "Klien aktif",
   },
   {
-    title: "Active Projects",
+    title: "Proyek Aktif",
     value: "42",
     change: "+8%",
     trend: "up",
     icon: FolderOpen,
-    description: "Currently running",
+    description: "Sedang berjalan",
   },
   {
-    title: "Monthly Revenue",
+    title: "Pendapatan Bulanan",
     value: "$2.4M",
     change: "+15%",
     trend: "up",
     icon: DollarSign,
-    description: "This month",
+    description: "Bulan ini",
   },
   {
-    title: "Supply Requests",
+    title: "Permintaan Persediaan",
     value: "156",
     change: "-3%",
     trend: "down",
     icon: ClipboardList,
-    description: "Pending approval",
+    description: "Menunggu persetujuan",
   },
 ]
 
@@ -89,43 +89,43 @@ const revenueData = [
 ]
 
 const projectStatusData = [
-  { name: "Running", value: 42, color: "#3b82f6" },
-  { name: "Completed", value: 128, color: "#10b981" },
-  { name: "Paused", value: 8, color: "#f59e0b" },
-  { name: "Planning", value: 15, color: "#8b5cf6" },
+  { name: "Berjalan", value: 42, color: "#3b82f6" },
+  { name: "Selesai", value: 128, color: "#10b981" },
+  { name: "Ditunda", value: 8, color: "#f59e0b" },
+  { name: "Perencanaan", value: 15, color: "#8b5cf6" },
 ]
 
 const recentActivities = [
   {
     id: 1,
     type: "client",
-    title: "New client registered",
-    description: "ABC Construction Ltd joined the platform",
-    time: "2 hours ago",
+    title: "Klien baru terdaftar",
+    description: "ABC Construction Ltd bergabung dengan platform",
+    time: "2 jam yang lalu",
     icon: Users,
   },
   {
     id: 2,
     type: "project",
-    title: "Project milestone completed",
-    description: "Downtown Mall - Phase 2 foundation completed",
-    time: "4 hours ago",
+    title: "Milestone proyek selesai",
+    description: "Downtown Mall - Fase 2 pondasi selesai",
+    time: "4 jam yang lalu",
     icon: CheckCircle,
   },
   {
     id: 3,
     type: "supply",
-    title: "Supply request approved",
-    description: "Steel beams order for Residential Complex",
-    time: "6 hours ago",
+    title: "Permintaan persediaan disetujui",
+    description: "Pesanan balok baja untuk Kompleks Hunian",
+    time: "6 jam yang lalu",
     icon: ClipboardList,
   },
   {
     id: 4,
     type: "project",
-    title: "Project status updated",
-    description: "Office Building renovation moved to completion",
-    time: "1 day ago",
+    title: "Status proyek diperbarui",
+    description: "Renovasi Gedung Kantor dipindah ke penyelesaian",
+    time: "1 hari yang lalu",
     icon: FolderOpen,
   },
 ]
@@ -151,7 +151,7 @@ export default function Dashboard() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Overview</BreadcrumbPage>
+                <BreadcrumbPage>Ringkasan</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -184,8 +184,8 @@ export default function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
-              <CardTitle>Revenue Overview</CardTitle>
-              <CardDescription>Monthly revenue and project count</CardDescription>
+              <CardTitle>Ringkasan Pendapatan</CardTitle>
+              <CardDescription>Pendapatan bulanan dan jumlah proyek</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
               <ResponsiveContainer width="100%" height={350}>
@@ -197,12 +197,12 @@ export default function Dashboard() {
                   <Tooltip
                     formatter={(value, name) => [
                       name === "revenue" ? `$${(value as number).toLocaleString()}` : value,
-                      name === "revenue" ? "Revenue" : "Projects",
+                      name === "revenue" ? "Pendapatan" : "Proyek",
                     ]}
                   />
                   <Legend />
-                  <Bar yAxisId="left" dataKey="revenue" fill="#3b82f6" name="Revenue" />
-                  <Line yAxisId="right" dataKey="projects" stroke="#10b981" name="Projects" />
+                  <Bar yAxisId="left" dataKey="revenue" fill="#3b82f6" name="Pendapatan" />
+                  <Bar yAxisId="right" dataKey="projects" fill="#10b981" name="Proyek" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -210,8 +210,8 @@ export default function Dashboard() {
 
           <Card className="col-span-3">
             <CardHeader>
-              <CardTitle>Project Status Distribution</CardTitle>
-              <CardDescription>Current project status breakdown</CardDescription>
+              <CardTitle>Distribusi Status Proyek</CardTitle>
+              <CardDescription>Rincian status proyek saat ini</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
@@ -221,7 +221,7 @@ export default function Dashboard() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -241,12 +241,12 @@ export default function Dashboard() {
           <Card className="col-span-4">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Recent Activities</CardTitle>
-                <CardDescription>Latest updates across the system</CardDescription>
+                <CardTitle>Aktivitas Terkini</CardTitle>
+                <CardDescription>Pembaruan terbaru di seluruh sistem</CardDescription>
               </div>
               <Button variant="outline" size="sm">
                 <Eye className="h-4 w-4 mr-2" />
-                View All
+                Lihat Semua
               </Button>
             </CardHeader>
             <CardContent>
@@ -272,13 +272,13 @@ export default function Dashboard() {
           <Card className="col-span-3">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Top Clients</CardTitle>
-                <CardDescription>Highest value clients this month</CardDescription>
+                <CardTitle>Klien Teratas</CardTitle>
+                <CardDescription>Klien dengan nilai tertinggi bulan ini</CardDescription>
               </div>
               <Button variant="outline" size="sm" asChild>
                 <Link href="/clients">
                   <Eye className="h-4 w-4 mr-2" />
-                  View All
+                  Lihat Semua
                 </Link>
               </Button>
             </CardHeader>
@@ -296,7 +296,7 @@ export default function Dashboard() {
                           <Badge variant="secondary" className="text-xs">
                             {client.type}
                           </Badge>
-                          <span className="text-xs text-gray-500">{client.projects} projects</span>
+                          <span className="text-xs text-gray-500">{client.projects} proyek</span>
                         </div>
                       </div>
                     </div>
@@ -311,25 +311,25 @@ export default function Dashboard() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
+              <CardTitle className="text-base font-medium">Aksi Cepat</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button className="w-full justify-start" asChild>
                 <Link href="/projects/new">
                   <Plus className="h-4 w-4 mr-2" />
-                  New Project
+                  Proyek Baru
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
                 <Link href="/clients/new">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Client
+                  Tambah Klien
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
                 <Link href="/supply-requests/new">
                   <Plus className="h-4 w-4 mr-2" />
-                  Supply Request
+                  Permintaan Persediaan
                 </Link>
               </Button>
             </CardContent>
@@ -337,7 +337,7 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Project Progress</CardTitle>
+              <CardTitle className="text-base font-medium">Progres Proyek</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -349,14 +349,14 @@ export default function Dashboard() {
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>Residential Complex</span>
+                  <span>Kompleks Hunian</span>
                   <span>45%</span>
                 </div>
                 <Progress value={45} className="h-2" />
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>Office Building</span>
+                  <span>Gedung Kantor</span>
                   <span>90%</span>
                 </div>
                 <Progress value={90} className="h-2" />
@@ -366,27 +366,27 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">System Status</CardTitle>
+              <CardTitle className="text-base font-medium">Status Sistem</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Active Projects</span>
+                <span className="text-sm">Proyek Aktif</span>
                 <Badge variant="default" className="bg-green-100 text-green-800">
                   <CheckCircle className="h-3 w-3 mr-1" />
-                  42 Running
+                  42 Berjalan
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Pending Approvals</span>
+                <span className="text-sm">Menunggu Persetujuan</span>
                 <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
                   <Clock className="h-3 w-3 mr-1" />
-                  12 Waiting
+                  12 Menunggu
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Overdue Tasks</span>
+                <span className="text-sm">Tugas Terlambat</span>
                 <Badge variant="destructive" className="bg-red-100 text-red-800">
-                  <AlertCircle className="h-3 w-3 mr-1" />3 Overdue
+                  <AlertCircle className="h-3 w-3 mr-1" />3 Terlambat
                 </Badge>
               </div>
             </CardContent>

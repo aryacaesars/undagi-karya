@@ -61,15 +61,15 @@ export default function NewProjectPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+                <BreadcrumbLink href="/projects">Proyek</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>New Project</BreadcrumbPage>
+                <BreadcrumbPage>Proyek Baru</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -83,14 +83,14 @@ export default function NewProjectPage() {
               <Building2 className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Create New Project</h1>
-              <p className="text-muted-foreground">Set up a new construction project with all necessary details</p>
+              <h1 className="text-2xl font-bold tracking-tight">Buat Proyek Baru</h1>
+              <p className="text-muted-foreground">Siapkan proyek konstruksi baru dengan semua detail yang diperlukan</p>
             </div>
           </div>
           <Button variant="outline" asChild>
             <Link href="/projects">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Projects
+              Kembali ke Proyek
             </Link>
           </Button>
         </div>
@@ -98,30 +98,30 @@ export default function NewProjectPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Project Information</CardTitle>
-              <CardDescription>Enter the basic details for the new project</CardDescription>
+              <CardTitle>Informasi Proyek</CardTitle>
+              <CardDescription>Masukkan detail dasar untuk proyek baru</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Project Name *</Label>
+                  <Label htmlFor="name">Nama Proyek *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    placeholder="Enter project name"
+                    placeholder="Masukkan nama proyek"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="client">Client *</Label>
+                  <Label htmlFor="client">Klien *</Label>
                   <Select
                     value={formData.client}
                     onValueChange={(value) => handleInputChange("client", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select client" />
+                      <SelectValue placeholder="Pilih klien" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="megabuild">MegaBuild Corporation</SelectItem>
@@ -135,14 +135,14 @@ export default function NewProjectPage() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="officer">Project Officer *</Label>
+                  <Label htmlFor="officer">Petugas Proyek *</Label>
                   <Select
                     value={formData.officer}
                     onValueChange={(value) => handleInputChange("officer", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select officer" />
+                      <SelectValue placeholder="Pilih petugas" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="john">John Smith</SelectItem>
@@ -153,14 +153,14 @@ export default function NewProjectPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="type">Type *</Label>
+                  <Label htmlFor="type">Tipe *</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => handleInputChange("type", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder="Pilih tipe" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="renovasi">Renovasi</SelectItem>
@@ -173,22 +173,22 @@ export default function NewProjectPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">Lokasi</Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange("location", e.target.value)}
-                  placeholder="Project location"
+                  placeholder="Lokasi proyek"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Deskripsi</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Brief description of the project"
+                  placeholder="Deskripsi singkat proyek"
                   rows={4}
                 />
               </div>
@@ -197,13 +197,13 @@ export default function NewProjectPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Timeline</CardTitle>
-              <CardDescription>Set the project start and end dates</CardDescription>
+              <CardTitle>Jadwal</CardTitle>
+              <CardDescription>Tetapkan tanggal mulai dan selesai proyek</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Start Date *</Label>
+                  <Label>Tanggal Mulai *</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -214,7 +214,7 @@ export default function NewProjectPage() {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : "Pick a date"}
+                        {startDate ? format(startDate, "PPP") : "Pilih tanggal"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -223,7 +223,7 @@ export default function NewProjectPage() {
                   </Popover>
                 </div>
                 <div className="space-y-2">
-                  <Label>End Date *</Label>
+                  <Label>Tanggal Selesai *</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -234,7 +234,7 @@ export default function NewProjectPage() {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : "Pick a date"}
+                        {endDate ? format(endDate, "PPP") : "Pilih tanggal"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -249,10 +249,10 @@ export default function NewProjectPage() {
           <div className="flex items-center gap-4">
             <Button type="submit" className="flex-1 max-w-xs">
               <Save className="mr-2 h-4 w-4" />
-              Create Project
+              Buat Proyek
             </Button>
             <Button type="button" variant="outline" asChild>
-              <Link href="/projects">Cancel</Link>
+              <Link href="/projects">Batal</Link>
             </Button>
           </div>
         </form>

@@ -57,15 +57,15 @@ export default function NewVendorPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/vendors">Vendors</BreadcrumbLink>
+                <BreadcrumbLink href="/vendors">Vendor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>New Vendor</BreadcrumbPage>
+                <BreadcrumbPage>Vendor Baru</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -79,14 +79,14 @@ export default function NewVendorPage() {
               <Building2 className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Add New Vendor</h1>
-              <p className="text-muted-foreground">Create a new vendor profile for your supply chain</p>
+              <h1 className="text-2xl font-bold tracking-tight">Tambah Vendor Baru</h1>
+              <p className="text-muted-foreground">Buat profil vendor baru untuk rantai pasokan Anda</p>
             </div>
           </div>
           <Button variant="outline" asChild>
             <Link href="/vendors">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Vendors
+              Kembali ke Vendor
             </Link>
           </Button>
         </div>
@@ -94,17 +94,17 @@ export default function NewVendorPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-              <CardDescription>Enter the basic details for the new vendor</CardDescription>
+              <CardTitle>Informasi Dasar</CardTitle>
+              <CardDescription>Masukkan detail dasar untuk vendor baru</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Vendor Name *</Label>
+                <Label htmlFor="name">Nama Vendor *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="Enter vendor name"
+                  placeholder="Masukkan nama vendor"
                   required
                 />
               </div>
@@ -114,23 +114,23 @@ export default function NewVendorPage() {
 
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone">Nomor Telepon *</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+62 812-3456-7890"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Alamat</Label>
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleInputChange("address", e.target.value)}
-                  placeholder="Enter full address"
+                  placeholder="Masukkan alamat lengkap"
                 />
               </div>
             </CardContent>
@@ -138,12 +138,12 @@ export default function NewVendorPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Vendor Details</CardTitle>
-              <CardDescription>Additional information about the vendor</CardDescription>
+              <CardTitle>Detail Vendor</CardTitle>
+              <CardDescription>Informasi tambahan tentang vendor</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="contactPerson">Contact Person</Label>
+                <Label htmlFor="contactPerson">Kontak Person</Label>
                 <Input
                   id="contactPerson"
                   value={formData.contactPerson}
@@ -153,13 +153,13 @@ export default function NewVendorPage() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="paymentTerms">Payment Terms</Label>
+                <Label htmlFor="paymentTerms">Syarat Pembayaran</Label>
                 <Select 
                   value={formData.paymentTerms} 
                   onValueChange={(value) => handleInputChange("paymentTerms", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select payment terms" />
+                    <SelectValue placeholder="Pilih syarat pembayaran" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Net 15">Net 15</SelectItem>
@@ -173,12 +173,12 @@ export default function NewVendorPage() {
 
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Deskripsi</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Brief description about the vendor and their products/services"
+                  placeholder="Deskripsi singkat tentang vendor dan produk/layanan mereka"
                   rows={4}
                 />
               </div>
@@ -188,10 +188,10 @@ export default function NewVendorPage() {
           <div className="flex items-center gap-4">
             <Button type="submit" className="flex-1 max-w-xs">
               <Save className="mr-2 h-4 w-4" />
-              Create Vendor
+              Buat Vendor
             </Button>
             <Button type="button" variant="outline" asChild>
-              <Link href="/vendors">Cancel</Link>
+              <Link href="/vendors">Batal</Link>
             </Button>
           </div>
         </form>

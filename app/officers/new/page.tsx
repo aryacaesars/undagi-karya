@@ -67,15 +67,15 @@ export default function NewOfficerPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/officers">Officers</BreadcrumbLink>
+                <BreadcrumbLink href="/officers">Petugas</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Add New Officer</BreadcrumbPage>
+                <BreadcrumbPage>Tambah Petugas Baru</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -85,13 +85,13 @@ export default function NewOfficerPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Add New Officer</h1>
-            <p className="text-muted-foreground">Create a new officer profile and assign them to projects</p>
+            <h1 className="text-2xl font-bold tracking-tight">Tambah Petugas Baru</h1>
+            <p className="text-muted-foreground">Buat profil petugas baru dan tugaskan mereka ke proyek</p>
           </div>
           <Button variant="ghost" asChild>
             <Link href="/officers">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Officers
+              Kembali ke Petugas
             </Link>
           </Button>
         </div>
@@ -103,18 +103,18 @@ export default function NewOfficerPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserPlus className="h-5 w-5" />
-                  Basic Information
+                  Informasi Dasar
                 </CardTitle>
                 <CardDescription>
-                  Enter the officer's personal and contact details
+                  Masukkan detail pribadi dan kontak petugas
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="name">Nama Lengkap *</Label>
                   <Input
                     id="name"
-                    placeholder="Enter full name"
+                    placeholder="Masukkan nama lengkap"
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
                     required
@@ -122,11 +122,11 @@ export default function NewOfficerPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Label htmlFor="phone">Nomor Telepon *</Label>
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="Enter phone number"
+                    placeholder="Masukkan nomor telepon"
                     value={formData.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
                     required
@@ -138,14 +138,14 @@ export default function NewOfficerPage() {
             {/* Work Details */}
             <Card>
               <CardHeader>
-                <CardTitle>Work Details</CardTitle>
+                <CardTitle>Detail Pekerjaan</CardTitle>
                 <CardDescription>
-                  Set the officer's work status and capacity
+                  Atur status kerja dan kapasitas petugas
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="joinDate">Join Date</Label>
+                  <Label htmlFor="joinDate">Tanggal Bergabung</Label>
                   <Input
                     id="joinDate"
                     type="date"
@@ -154,10 +154,10 @@ export default function NewOfficerPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="notes">Additional Notes</Label>
+                  <Label htmlFor="notes">Catatan Tambahan</Label>
                   <Textarea
                     id="notes"
-                    placeholder="Any additional information about the officer..."
+                    placeholder="Informasi tambahan tentang petugas..."
                     rows={4}
                   />
                 </div>
@@ -170,7 +170,7 @@ export default function NewOfficerPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-end gap-4">
                 <Button variant="outline" type="button" asChild>
-                  <Link href="/officers">Cancel</Link>
+                  <Link href="/officers">Batal</Link>
                 </Button>
                 <Button 
                   type="submit" 
@@ -178,11 +178,11 @@ export default function NewOfficerPage() {
                   className="min-w-[120px]"
                 >
                   {isLoading ? (
-                    "Saving..."
+                    "Menyimpan..."
                   ) : (
                     <>
                       <Save className="mr-2 h-4 w-4" />
-                      Save Officer
+                      Simpan Petugas
                     </>
                   )}
                 </Button>
