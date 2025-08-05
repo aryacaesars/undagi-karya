@@ -2,7 +2,7 @@ import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/
 import type { RequestItem } from '@/app/forms/new/page';
 
 // Base64 placeholder logo (a simple square) to avoid image loading issues
-const PLACEHOLDER_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEHUlEQVR4nO2dS4gcVRSGr0aJLnxEjSL4woWKaHDhwoULQUFE1I0rFReCotGo0ZpzqlrFR0CJD3yB4hND6k5PjVHxCW7cuBIXgiLixkV8JKiJGMHEmJhHnRoJzGQmk5np6vvvrf+DYhimq+v8X98+fW931Q0hCIIgCIIgCIIgCIIgCIIwUZcncp0Z6hzzCMcDwhsI8SHCN4hwwAodROBDBDZH1DbrxxqEOgvba0Wd9GNyfKrOZIQ9iNDuN4ReG9O/gch+dCbsfvnyuU17KdiFCZNLR1SC0EbgKQzY8g2NeSvUicngWoRtU52JU0HwJcLWpJEUQGovR+BvkwnhBEL4ve/19pxG4EIE9k85hL8w1esMbtO4+hUC30wxhKNdaUS2ZbKx+pRScLukYVyBwHZkFERHAHy9Mtn4CLpXj58VP4jjbx7ijCxCQOBvTSYa36R7qXOVbxADrE97KMfA3poUciWCerdOm7oys3ahawhH2sDXK/tcGumOsO0po2OddN83GgThRDDHtzHgupOGEQrFDKJTj9/NdXV88ZIwQsGYQSRyYeDy04WR1qTBGUSwlX0dV1wYpzZIXkHQDbZluluyFEYoGDeIuJFa7RauxDCyDSLkJi6M0PFcaRih4MwgOm1wYYzlHSCEjGAahLjCMJ1Z3iHaTsqFMc5KVBihYMwgii2MUDBmEEUXRigYNIgiCyMUjHYeUXRhhIJBgzCx6JpEpc7i1JMQhjrLpjPbuA1GwXh3KmGEgjGDSGDtTNbZIwyO+35s6ZySYWP4jb5jTVwYw68y63wYcR0YchcVrsgwQsGYQZS1MELB6MurmjEIYRgjD4IwiYgwCLsxCMIFEQbhLQbBcRDsGO4Yw5VDJu0JgjCJiDAIuzEIwgURBuEtBsFxEOwY7hjDlUMm7QmCMImIMAi7MQjCBREG4S0GwXEQ7BjuGMOVQybtCYIwiYgwCLsxCMIFEQbhLQbBcRDsGO4Yw5VDJu0JgjCJiDAIuzEIwgURBuEtBsFxEOwY7hjDlUMm7QmCMImIMAi7MQjCBREG4S0GwXEQ7BjuGMOVQybtCYIwiYgwCLsxCMIFEQbhLQbBcRDsGO4Yw5VDJu0JgjCJiDAIuzEIwgURBuEtBsFxEOwY7hjDlUMm7QmCMImIMAi7MQjCBREG4S0GwXEQ7BjuGMOVQybtCYIwiYgwCLsxCMIFEQbhLQbBcRDsGO4Yw5VDJu0JgjCJiDAIuzEIwgURBuEtBsFxEOwY7hjDlUMm7QmCMImIMAi7MQjCBREG4S0GwXEQ7BjuGMOVQybtCYIwiYgwCLsxCMIFEQbhLQbBcRDsGO4Yw5VDJu0JgjCJiDAIuzEIwgURBuEtBsFxEOwY7hjDlUMm7QmCMAno7VF1JgdBEARBEARBEARBEARBEMKI8h+Ka8TXNGp1lAAAAABJRU5ErkJggg==';
+const PLACEHOLDER_LOGO = '/Logo.svg';
 
 // Base64 placeholder signature image (will be replaced with the actual image from public folder)
 const SIGNATURE_IMAGE = '/ttd.png';
@@ -145,10 +145,10 @@ interface FormPDFProps {
 // Create Document Component
 export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, signatureUrl }: FormPDFProps) => (
   <Document title="Supply Request Form">
+    {/* First page: up to 6 items */}
     <Page size="A4" style={styles.page}>
       {/* Header with logo and company info */}
       <View style={styles.header}>
-        {/* Using an image from public folder or falling back to base64 */}
         <Image 
           src={logoUrl || PLACEHOLDER_LOGO}
           style={styles.logo} 
@@ -169,7 +169,6 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
       {/* Basic form information */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Form Information</Text>
-        
         <View style={styles.grid}>
           <View style={styles.field}>
             <Text style={styles.label}>Project:</Text>
@@ -181,7 +180,6 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
                formData.project}
             </Text>
           </View>
-          
           <View style={styles.field}>
             <Text style={styles.label}>Type:</Text>
             <Text style={styles.value}>
@@ -192,12 +190,10 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
                formData.type}
             </Text>
           </View>
-          
           <View style={styles.field}>
             <Text style={styles.label}>Project Officer:</Text>
             <Text style={styles.value}>{formData.projectOfficer}</Text>
           </View>
-          
           <View style={styles.field}>
             <Text style={styles.label}>Date:</Text>
             <Text style={styles.value}>{createdDate.toLocaleDateString()}</Text>
@@ -205,10 +201,9 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
         </View>
       </View>
 
-      {/* Items table */}
+      {/* Items table (first 6 items) */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Requested Items</Text>
-        
         <View style={styles.table}>
           <View style={styles.tableHeaderRow}>
             <View style={styles.tableColWide}><Text>Item Name</Text></View>
@@ -217,8 +212,7 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             <View style={styles.tableCol}><Text>Specifications</Text></View>
             <View style={styles.tableCol}><Text>Notes</Text></View>
           </View>
-          
-          {items.map((item, index) => (
+          {(items.slice(0, 6)).map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <View style={styles.tableColWide}><Text>{item.itemName || '-'}</Text></View>
               <View style={styles.tableColNarrow}><Text>{item.quantity || 0}</Text></View>
@@ -228,27 +222,88 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             </View>
           ))}
         </View>
-
         <Text>Total Items: {items.length}</Text>
       </View>
 
-      {/* Signatures section */}
-      <View style={styles.signature}>
-        <View style={styles.signatureBox}>
-          {/* Use the signature image from public folder */}
-          <Image 
-            src={signatureUrl || SIGNATURE_IMAGE}
-            style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
-          />
-          <Text style={styles.signatureText}>Approved by: Rizal Habib</Text>
-        </View>
-      </View>
-
-      {/* Footer with document reference */}
-      <View style={styles.footer}>
-        <Text>Form ID: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Generated on: {createdDate.toLocaleString()}</Text>
-      </View>
+      {/* Only show signature and footer on last page */}
+      {items.length <= 6 && (
+        <>
+          <View style={styles.signature}>
+            <View style={styles.signatureBox}>
+              <Image 
+                src={signatureUrl || SIGNATURE_IMAGE}
+                style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
+              />
+              <Text style={styles.signatureText}>Approved by: Rizal Habib</Text>
+            </View>
+          </View>
+          <View style={styles.footer}>
+            <Text>Form ID: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Generated on: {createdDate.toLocaleString()}</Text>
+          </View>
+        </>
+      )}
     </Page>
+
+    {/* Second page if more than 6 items */}
+    {items.length > 6 && (
+      <Page size="A4" style={styles.page}>
+        {/* Header with logo and company info (optional, can be repeated or omitted) */}
+        <View style={styles.header}>
+          <Image 
+            src={logoUrl || PLACEHOLDER_LOGO}
+            style={styles.logo} 
+          />
+          <View style={styles.companyDetails}>
+            <Text>UNDAGI KARYA</Text>
+            <Text>Construction & Development</Text>
+            <Text>Email: info@undagi-karya.com</Text>
+            <Text>Phone: (021) 1234-5678</Text>
+          </View>
+        </View>
+
+        {/* Document title (optional, can be repeated or omitted) */}
+        <View style={styles.title}>
+          <Text>SUPPLY REQUEST FORM (cont'd)</Text>
+        </View>
+
+        {/* Items table (remaining items) */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Requested Items (continued)</Text>
+          <View style={styles.table}>
+            <View style={styles.tableHeaderRow}>
+              <View style={styles.tableColWide}><Text>Item Name</Text></View>
+              <View style={styles.tableColNarrow}><Text>Qty</Text></View>
+              <View style={styles.tableColNarrow}><Text>Unit</Text></View>
+              <View style={styles.tableCol}><Text>Specifications</Text></View>
+              <View style={styles.tableCol}><Text>Notes</Text></View>
+            </View>
+            {(items.slice(6)).map((item, index) => (
+              <View key={index + 6} style={styles.tableRow}>
+                <View style={styles.tableColWide}><Text>{item.itemName || '-'}</Text></View>
+                <View style={styles.tableColNarrow}><Text>{item.quantity || 0}</Text></View>
+                <View style={styles.tableColNarrow}><Text>{item.unit || '-'}</Text></View>
+                <View style={styles.tableCol}><Text>{item.specifications || '-'}</Text></View>
+                <View style={styles.tableCol}><Text>{item.notes || '-'}</Text></View>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Signatures section and footer only on last page */}
+        <View style={styles.signature}>
+          <View style={styles.signatureBox}>
+            <Image 
+              src={signatureUrl || SIGNATURE_IMAGE}
+              style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
+            />
+            <Text style={styles.signatureText}>Approved by: Rizal Habib</Text>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>Form ID: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Generated on: {createdDate.toLocaleString()}</Text>
+        </View>
+      </Page>
+    )}
   </Document>
 );
 
