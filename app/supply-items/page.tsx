@@ -31,39 +31,39 @@ import Link from "next/link"
 const supplyItemsData = [
   {
     id: 1,
-    name: "Steel I-Beam 20ft",
-    description: "Heavy-duty steel I-beam for structural support",
-    specifications: "20ft length, Grade A36 steel",
+    name: "Balok Baja I-Beam 20ft",
+    description: "Balok baja I-beam tugas berat untuk dukungan struktural",
+    specifications: "Panjang 20ft, Baja Grade A36",
   },
   {
     id: 2,
-    name: "Concrete Mix (High Strength)",
-    description: "High-strength concrete mix for foundations",
-    specifications: "4000 PSI, Portland cement",
+    name: "Campuran Beton (Kekuatan Tinggi)",
+    description: "Campuran beton kekuatan tinggi untuk pondasi",
+    specifications: "4000 PSI, Semen Portland",
   },
   {
     id: 3,
-    name: "Electrical Wire 12 AWG",
-    description: "12 AWG copper electrical wire",
-    specifications: "THHN/THWN-2, 600V rated",
+    name: "Kabel Listrik 12 AWG",
+    description: "Kabel listrik tembaga 12 AWG",
+    specifications: "THHN/THWN-2, rated 600V",
   },
   {
     id: 4,
-    name: "Plywood Sheet 4x8",
-    description: "3/4 inch plywood sheet for construction",
-    specifications: "4x8 feet, Grade A/B, exterior grade",
+    name: "Lembaran Plywood 4x8",
+    description: "Lembaran plywood 3/4 inci untuk konstruksi",
+    specifications: "4x8 kaki, Grade A/B, kualitas eksterior",
   },
   {
     id: 5,
-    name: "PVC Pipe 4 inch",
-    description: "4-inch PVC pipe for drainage",
-    specifications: "Schedule 40, white PVC",
+    name: "Pipa PVC 4 inci",
+    description: "Pipa PVC 4 inci untuk drainase",
+    specifications: "Schedule 40, PVC putih",
   },
   {
     id: 6,
-    name: "Insulation Batts R-19",
-    description: "Fiberglass insulation batts",
-    specifications: "R-19, 6.25 inch thick, kraft faced",
+    name: "Batt Insulasi R-19",
+    description: "Batt insulasi fiberglass",
+    specifications: "R-19, tebal 6.25 inci, kraft faced",
   },
 ]
 
@@ -88,11 +88,11 @@ export default function SupplyItemsPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Supply Items</BreadcrumbPage>
+                <BreadcrumbPage>Item Persediaan</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -102,20 +102,20 @@ export default function SupplyItemsPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Supply Items Management</h1>
-            <p className="text-muted-foreground">Manage your catalog of construction materials and equipment</p>
+            <h1 className="text-2xl font-bold tracking-tight">Manajemen Item Persediaan</h1>
+            <p className="text-muted-foreground">Kelola katalog material konstruksi dan peralatan Anda</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" asChild>
               <Link href="/supply-items/import">
                 <Upload className="mr-2 h-4 w-4" />
-                Import Items
+                Import Item
               </Link>
             </Button>
             <Button asChild>
               <Link href="/supply-items/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Add Item
+                Tambah Item
               </Link>
             </Button>
           </div>
@@ -124,27 +124,27 @@ export default function SupplyItemsPage() {
         <div className="grid gap-4 md:grid-cols-1">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Items</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Item</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{supplyItemsData.length}</div>
-              <p className="text-xs text-muted-foreground">In catalog</p>
+              <p className="text-xs text-muted-foreground">Dalam katalog</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Supply Items Catalog</CardTitle>
-            <CardDescription>Manage your construction materials and equipment catalog</CardDescription>
+            <CardTitle>Katalog Item Persediaan</CardTitle>
+            <CardDescription>Kelola katalog material konstruksi dan peralatan Anda</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search items..."
+                  placeholder="Cari item..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -156,9 +156,9 @@ export default function SupplyItemsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Item Name</TableHead>
-                    <TableHead>Specifications</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Nama Item</TableHead>
+                    <TableHead>Spesifikasi</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -179,16 +179,16 @@ export default function SupplyItemsPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">Buka menu</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
                               <Link href={`/supply-items/${item.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
-                                View Details
+                                Lihat Detail
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
@@ -196,7 +196,7 @@ export default function SupplyItemsPage() {
                               Edit Item
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Create Request</DropdownMenuItem>
+                            <DropdownMenuItem>Buat Permintaan</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

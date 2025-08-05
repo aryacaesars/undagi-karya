@@ -40,68 +40,68 @@ import Link from "next/link"
 const projectsData = [
   {
     id: 1,
-    name: "Downtown Mall Phase 2",
+    name: "Mall Downtown Fase 2",
     client: "MegaBuild Corporation",
     officer: "John Smith",
     progress: 75,
     startDate: "2023-03-15",
     endDate: "2024-01-30",
-    description: "Expansion of the existing mall with new retail spaces",
+    description: "Perluasan mall yang sudah ada dengan ruang ritel baru",
     type: "renovasi",
   },
   {
     id: 2,
-    name: "Residential Complex A",
+    name: "Kompleks Perumahan A",
     client: "Urban Developers CV",
     officer: "Sarah Johnson",
     progress: 15,
     startDate: "2023-08-01",
     endDate: "2024-06-15",
-    description: "Modern residential complex with 50 units",
+    description: "Kompleks perumahan modern dengan 50 unit",
     type: "instalasi",
   },
   {
     id: 3,
-    name: "Highway Bridge Renovation",
+    name: "Renovasi Jembatan Jalan Raya",
     client: "City Infrastructure Ltd",
     officer: "Mike Wilson",
     progress: 45,
     startDate: "2023-05-20",
     endDate: "2023-12-10",
-    description: "Complete renovation of the main highway bridge",
+    description: "Renovasi lengkap jembatan jalan raya utama",
     type: "renovasi",
   },
   {
     id: 4,
-    name: "Eco-Friendly Office Building",
+    name: "Gedung Kantor Ramah Lingkungan",
     client: "Green Construction",
     officer: "Emily Davis",
     progress: 100,
     startDate: "2022-11-01",
     endDate: "2023-07-15",
-    description: "LEED certified office building with solar panels",
+    description: "Gedung kantor bersertifikat LEED dengan panel surya",
     type: "instalasi",
   },
   {
     id: 5,
-    name: "Home Renovation",
+    name: "Renovasi Rumah",
     client: "John Smith",
     officer: "Tom Brown",
     progress: 60,
     startDate: "2023-06-10",
     endDate: "2023-10-30",
-    description: "Complete home renovation including kitchen and bathrooms",
+    description: "Renovasi rumah lengkap termasuk dapur dan kamar mandi",
     type: "peralatan",
   },
   {
     id: 6,
-    name: "Shopping Center Expansion",
+    name: "Perluasan Pusat Perbelanjaan",
     client: "Premier Builders Inc",
     officer: "Lisa Anderson",
     progress: 30,
     startDate: "2023-04-01",
     endDate: "2024-02-28",
-    description: "Adding new wing to existing shopping center",
+    description: "Menambah sayap baru ke pusat perbelanjaan yang ada",
     type: "perlengkapan",
   },
 ]
@@ -145,11 +145,11 @@ export default function ProjectsPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Projects</BreadcrumbPage>
+                <BreadcrumbPage>Proyek</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -159,13 +159,13 @@ export default function ProjectsPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Project Management</h1>
-            <p className="text-muted-foreground">Track and manage all your construction projects</p>
+            <h1 className="text-2xl font-bold tracking-tight">Manajemen Proyek</h1>
+            <p className="text-muted-foreground">Lacak dan kelola semua proyek konstruksi Anda</p>
           </div>
           <Button asChild>
             <Link href="/projects/new">
               <Plus className="mr-2 h-4 w-4" />
-              New Project
+              Proyek Baru
             </Link>
           </Button>
         </div>
@@ -173,49 +173,49 @@ export default function ProjectsPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Proyek</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{projectsData.length}</div>
-              <p className="text-xs text-muted-foreground">All projects</p>
+              <p className="text-xs text-muted-foreground">Semua proyek</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Progress</CardTitle>
+              <CardTitle className="text-sm font-medium">Progres Rata-rata</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {Math.round(projectsData.reduce((sum, project) => sum + project.progress, 0) / projectsData.length)}%
               </div>
-              <p className="text-xs text-muted-foreground">Overall completion</p>
+              <p className="text-xs text-muted-foreground">Penyelesaian keseluruhan</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Types</CardTitle>
+              <CardTitle className="text-sm font-medium">Tipe</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{[...new Set(projectsData.map(p => p.type))].length}</div>
-              <p className="text-xs text-muted-foreground">Project types</p>
+              <p className="text-xs text-muted-foreground">Tipe proyek</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Projects</CardTitle>
-            <CardDescription>Manage and track the progress of all your construction projects</CardDescription>
+            <CardTitle>Semua Proyek</CardTitle>
+            <CardDescription>Kelola dan lacak progres semua proyek konstruksi Anda</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 mb-6">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search projects..."
+                  placeholder="Cari proyek..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -223,10 +223,10 @@ export default function ProjectsPage() {
               </div>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by type" />
+                  <SelectValue placeholder="Filter berdasarkan tipe" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Type</SelectItem>
+                  <SelectItem value="all">Semua Tipe</SelectItem>
                   <SelectItem value="renovasi">Renovasi</SelectItem>
                   <SelectItem value="instalasi">Instalasi</SelectItem>
                   <SelectItem value="peralatan">Peralatan</SelectItem>
@@ -251,19 +251,19 @@ export default function ProjectsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
                             <Link href={`/projects/${project.id}`}>
                               <Eye className="mr-2 h-4 w-4" />
-                              View Details
+                              Lihat Detail
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Edit className="mr-2 h-4 w-4" />
-                            Edit Project
+                            Edit Proyek
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>Assign Officer</DropdownMenuItem>
+                          <DropdownMenuItem>Tugaskan Petugas</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -274,7 +274,7 @@ export default function ProjectsPage() {
                   <CardContent className="space-y-4">
                     <div>
                       <div className="flex justify-between text-sm mb-2">
-                        <span>Progress</span>
+                        <span>Progres</span>
                         <span>{project.progress}%</span>
                       </div>
                       <Progress value={project.progress} className="h-2" />
@@ -282,35 +282,35 @@ export default function ProjectsPage() {
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-muted-foreground">Officer</p>
+                        <p className="text-muted-foreground">Petugas</p>
                         <p className="font-medium">{project.officer}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Type</p>
+                        <p className="text-muted-foreground">Tipe</p>
                         <p className="font-medium">{project.type}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Start Date</p>
+                        <p className="text-muted-foreground">Tanggal Mulai</p>
                         <p className="font-medium">{new Date(project.startDate).toLocaleDateString()}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">End Date</p>
+                        <p className="text-muted-foreground">Tanggal Selesai</p>
                         <p className="font-medium">{new Date(project.endDate).toLocaleDateString()}</p>
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Description</p>
+                      <p className="text-sm text-muted-foreground mb-1">Deskripsi</p>
                       <p className="text-sm">{project.description}</p>
                     </div>
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="text-sm">
-                        <span className="text-muted-foreground">Progress: </span>
+                        <span className="text-muted-foreground">Progres: </span>
                         <span className="font-medium">{project.progress}%</span>
                       </div>
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/projects/${project.id}`}>View Details</Link>
+                        <Link href={`/projects/${project.id}`}>Lihat Detail</Link>
                       </Button>
                     </div>
                   </CardContent>

@@ -212,15 +212,15 @@ export default function NewFormPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/forms">Forms</BreadcrumbLink>
+                <BreadcrumbLink href="/forms">Formulir</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>New Form</BreadcrumbPage>
+                <BreadcrumbPage>Formulir Baru</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -234,14 +234,14 @@ export default function NewFormPage() {
               <ClipboardList className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Create Form</h1>
-              <p className="text-muted-foreground">Submit a new form for your project requirements</p>
+              <h1 className="text-2xl font-bold tracking-tight">Buat Formulir</h1>
+              <p className="text-muted-foreground">Ajukan formulir baru untuk kebutuhan proyek Anda</p>
             </div>
           </div>
           <Button variant="outline" asChild>
             <Link href="/forms">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Forms
+              Kembali ke Formulir
             </Link>
           </Button>
         </div>
@@ -249,38 +249,38 @@ export default function NewFormPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Form Information</CardTitle>
-              <CardDescription>Enter the basic details for your form</CardDescription>
+              <CardTitle>Informasi Formulir</CardTitle>
+              <CardDescription>Masukkan detail dasar untuk formulir Anda</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="project">Project *</Label>
+                  <Label htmlFor="project">Proyek *</Label>
                   <Select
                     value={formData.project}
                     onValueChange={(value) => handleInputChange("project", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select project" />
+                      <SelectValue placeholder="Pilih proyek" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="downtown-mall">Downtown Mall Phase 2</SelectItem>
-                      <SelectItem value="residential-complex">Residential Complex A</SelectItem>
-                      <SelectItem value="highway-bridge">Highway Bridge Renovation</SelectItem>
-                      <SelectItem value="office-building">Eco-Friendly Office Building</SelectItem>
+                      <SelectItem value="downtown-mall">Mall Downtown Fase 2</SelectItem>
+                      <SelectItem value="residential-complex">Kompleks Perumahan A</SelectItem>
+                      <SelectItem value="highway-bridge">Renovasi Jembatan Jalan Raya</SelectItem>
+                      <SelectItem value="office-building">Gedung Kantor Ramah Lingkungan</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="type">Type *</Label>
+                  <Label htmlFor="type">Tipe *</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => handleInputChange("type", value)}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder="Pilih tipe" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="renovasi">Renovasi</SelectItem>
@@ -293,14 +293,14 @@ export default function NewFormPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="projectOfficer">Project Officer *</Label>
+                <Label htmlFor="projectOfficer">Petugas Proyek *</Label>
                 <Select
                   value={formData.projectOfficer}
                   onValueChange={(value) => handleInputChange("projectOfficer", value)}
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select project officer" />
+                    <SelectValue placeholder="Pilih petugas proyek" />
                   </SelectTrigger>
                   <SelectContent>
                     {projectOfficersData.map((officer) => (
@@ -334,12 +334,12 @@ export default function NewFormPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Form Items</CardTitle>
-                <CardDescription>Add items to your form</CardDescription>
+                <CardTitle>Item Formulir</CardTitle>
+                <CardDescription>Tambahkan item ke formulir Anda</CardDescription>
               </div>
               <Button type="button" onClick={addItem} variant="outline">
                 <Plus className="mr-2 h-4 w-4" />
-                Add Item
+                Tambah Item
               </Button>
             </CardHeader>
             <CardContent>
@@ -347,12 +347,12 @@ export default function NewFormPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Item Name</TableHead>
-                      <TableHead>Quantity</TableHead>
-                      <TableHead>Unit</TableHead>
-                      <TableHead>Specifications</TableHead>
-                      <TableHead>Notes</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>Nama Barang</TableHead>
+                      <TableHead>Jumlah</TableHead>
+                      <TableHead>Satuan</TableHead>
+                      <TableHead>Spesifikasi</TableHead>
+                      <TableHead>Catatan</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -364,7 +364,7 @@ export default function NewFormPage() {
                             onValueChange={(value) => handleItemChange(item.id, "itemName", value)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select item" />
+                              <SelectValue placeholder="Pilih item" />
                             </SelectTrigger>
                             <SelectContent>
                               {supplyItemsData.map((supplyItem) => (
@@ -394,7 +394,7 @@ export default function NewFormPage() {
                           <Input
                             value={item.unit}
                             onChange={(e) => handleItemChange(item.id, "unit", e.target.value)}
-                            placeholder="Unit"
+                            placeholder="Satuan"
                             required
                           />
                         </TableCell>
@@ -402,14 +402,14 @@ export default function NewFormPage() {
                           <Input
                             value={item.specifications}
                             onChange={(e) => handleItemChange(item.id, "specifications", e.target.value)}
-                            placeholder="Specifications"
+                            placeholder="Spesifikasi"
                           />
                         </TableCell>
                         <TableCell>
                           <Input
                             value={item.notes}
                             onChange={(e) => handleItemChange(item.id, "notes", e.target.value)}
-                            placeholder="Additional notes"
+                            placeholder="Catatan tambahan"
                           />
                         </TableCell>
                         <TableCell className="text-right">
@@ -432,7 +432,7 @@ export default function NewFormPage() {
               </div>
               <div className="flex justify-end mt-4 p-4 bg-muted/50 rounded-lg">
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Total Items</p>
+                  <p className="text-sm text-muted-foreground">Total Item</p>
                   <p className="text-2xl font-bold">{items.length}</p>
                 </div>
               </div>
@@ -442,10 +442,10 @@ export default function NewFormPage() {
           <div className="flex items-center gap-4">
             <Button type="submit" className="flex-1 max-w-xs" disabled={isSubmitting}>
               <Save className="mr-2 h-4 w-4" />
-              {isSubmitting ? 'Submitting...' : 'Submit Form'}
+              {isSubmitting ? 'Mengirim...' : 'Kirim Formulir'}
             </Button>
             <Button type="button" variant="outline" asChild disabled={isSubmitting}>
-              <Link href="/forms">Cancel</Link>
+              <Link href="/forms">Batal</Link>
             </Button>
             
             {/* Fallback PDF download button (shown if there are issues with the PDF viewer) */}
@@ -463,7 +463,7 @@ export default function NewFormPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg w-[90vw] h-[90vh] flex flex-col">
               <div className="flex items-center justify-between p-4 border-b">
-                <h3 className="text-xl font-bold">Form PDF Preview</h3>
+                <h3 className="text-xl font-bold">Pratinjau PDF Formulir</h3>
                 <div className="flex gap-2">
                   <div className="flex items-center gap-2">
                     <PDFDownloader
@@ -475,7 +475,7 @@ export default function NewFormPage() {
                       // If the user closes the preview, show the fallback button
                       setUseFallbackPdf(true);
                     }}>
-                      Close
+                      Tutup
                     </Button>
                     <Button 
                       variant="outline" 
@@ -483,7 +483,7 @@ export default function NewFormPage() {
                         router.push("/forms");
                       }}
                     >
-                      Return to Forms
+                      Kembali ke Formulir
                     </Button>
                   </div>
                 </div>
@@ -491,7 +491,7 @@ export default function NewFormPage() {
               <div className="flex-1 overflow-auto p-4">
                 <ErrorBoundary fallback={
                   <div className="flex flex-col items-center justify-center h-full">
-                    <p className="text-red-500 mb-4">There was an error displaying the PDF preview.</p>
+                    <p className="text-red-500 mb-4">Terjadi kesalahan saat menampilkan pratinjau PDF.</p>
                     <DownloadPDFButton
                       formData={formSubmittedData.current.formData}
                       items={formSubmittedData.current.items}
@@ -512,7 +512,7 @@ export default function NewFormPage() {
         {useFallbackPdf && (
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
             <div className="flex flex-col gap-3">
-              <p className="text-green-700">Form submitted successfully! Click the "Download PDF" button to save your form.</p>
+              <p className="text-green-700">Formulir berhasil dikirim! Klik tombol "Unduh PDF" untuk menyimpan formulir Anda.</p>
               <div className="flex gap-3">
                 <DownloadPDFButton
                   formData={formSubmittedData.current.formData}
@@ -524,7 +524,7 @@ export default function NewFormPage() {
                     router.push("/forms");
                   }}
                 >
-                  Return to Forms
+                  Kembali ke Formulir
                 </Button>
               </div>
             </div>

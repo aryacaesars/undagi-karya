@@ -158,14 +158,19 @@ export default function OfficersPage() {
       Medium: "bg-yellow-100 text-yellow-800",
       Low: "bg-green-100 text-green-800",
     }
-    return <Badge className={colors[workload as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{workload}</Badge>
+    const translations = {
+      High: "Tinggi",
+      Medium: "Sedang", 
+      Low: "Rendah",
+    }
+    return <Badge className={colors[workload as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{translations[workload as keyof typeof translations] || workload}</Badge>
   }
 
   const getStatusBadge = (status: string) => {
     return status === "Active" ? (
-      <Badge className="bg-green-100 text-green-800">Active</Badge>
+      <Badge className="bg-green-100 text-green-800">Aktif</Badge>
     ) : (
-      <Badge variant="secondary">On Leave</Badge>
+      <Badge variant="secondary">Cuti</Badge>
     )
   }
 
@@ -178,11 +183,11 @@ export default function OfficersPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Officers</BreadcrumbPage>
+                <BreadcrumbPage>Petugas</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -192,73 +197,53 @@ export default function OfficersPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Officer Management</h1>
-            <p className="text-muted-foreground">Manage project officers and track their workload and assignments</p>
+            <h1 className="text-2xl font-bold tracking-tight">Manajemen Petugas</h1>
+            <p className="text-muted-foreground">Kelola petugas proyek dan lacak beban kerja serta penugasan mereka</p>
           </div>
           <Button asChild>
             <Link href="/officers/new">
               <Plus className="mr-2 h-4 w-4" />
-              Add Officer
+              Tambah Petugas
             </Link>
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Officers</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Petugas</CardTitle>
               <UserCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{officersData.length}</div>
-              <p className="text-xs text-muted-foreground">All officers</p>
+              <p className="text-xs text-muted-foreground">Semua petugas</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Officers</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{officersData.filter((o) => o.status === "Active").length}</div>
-              <p className="text-xs text-muted-foreground">Currently working</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+              <CardTitle className="text-sm font-medium">Proyek Aktif</CardTitle>
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {officersData.reduce((sum, officer) => sum + officer.activeProjects, 0)}
               </div>
-              <p className="text-xs text-muted-foreground">Currently managed</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">High Workload</CardTitle>
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{officersData.filter((o) => o.workload === "High").length}</div>
-              <p className="text-xs text-muted-foreground">Officers at capacity</p>
+              <p className="text-xs text-muted-foreground">Sedang dikelola</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Officers</CardTitle>
-            <CardDescription>Manage project officers, their assignments, and workload distribution</CardDescription>
+            <CardTitle>Semua Petugas</CardTitle>
+            <CardDescription>Kelola petugas proyek, tugas mereka, dan distribusi beban kerja</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 mb-6">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search officers..."
+                  placeholder="Cari petugas..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -293,19 +278,19 @@ export default function OfficersPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
                             <Link href={`/officers/${officer.id}`}>
                               <Eye className="mr-2 h-4 w-4" />
-                              View Profile
+                              Lihat Profil
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Edit className="mr-2 h-4 w-4" />
-                            Edit Officer
+                            Edit Petugas
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>Assign Project</DropdownMenuItem>
+                          <DropdownMenuItem>Tugaskan Proyek</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -313,11 +298,11 @@ export default function OfficersPage() {
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-muted-foreground">Active Projects</p>
+                        <p className="text-muted-foreground">Proyek Aktif</p>
                         <p className="font-medium">{officer.activeProjects}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Completed</p>
+                        <p className="text-muted-foreground">Selesai</p>
                         <p className="font-medium">{officer.completedProjects}</p>
                       </div>
                     </div>
@@ -331,15 +316,15 @@ export default function OfficersPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>Joined {new Date(officer.joinDate).toLocaleDateString()}</span>
+                        <span>Bergabung {new Date(officer.joinDate).toLocaleDateString()}</span>
                       </div>
                     </div>
 
                     <div className="flex justify-between items-center pt-2">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/officers/${officer.id}`}>View Profile</Link>
+                        <Link href={`/officers/${officer.id}`}>Lihat Profil</Link>
                       </Button>
-                      <Button size="sm">Assign Project</Button>
+                      <Button size="sm">Tugaskan Proyek</Button>
                     </div>
                   </CardContent>
                 </Card>

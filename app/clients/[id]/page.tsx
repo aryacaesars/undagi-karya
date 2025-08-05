@@ -95,11 +95,11 @@ export default function ClientDetailPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/clients">Clients</BreadcrumbLink>
+                <BreadcrumbLink href="/clients">Klien</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
@@ -123,12 +123,12 @@ export default function ClientDetailPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Client
+              Edit Klien
             </Button>
             <Button asChild>
               <Link href="/projects/new">
                 <Plus className="mr-2 h-4 w-4" />
-                New Project
+                Proyek Baru
               </Link>
             </Button>
           </div>
@@ -137,24 +137,24 @@ export default function ClientDetailPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Proyek</CardTitle>
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{clientData.totalProjects}</div>
-              <p className="text-xs text-muted-foreground">{clientData.activeProjects} active</p>
+              <p className="text-xs text-muted-foreground">{clientData.activeProjects} aktif</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+              <CardTitle className="text-sm font-medium">Tingkat Keberhasilan</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {Math.round((clientData.completedProjects / clientData.totalProjects) * 100)}%
               </div>
-              <p className="text-xs text-muted-foreground">Completion rate</p>
+              <p className="text-xs text-muted-foreground">Tingkat penyelesaian</p>
             </CardContent>
           </Card>
         </div>
@@ -162,8 +162,8 @@ export default function ClientDetailPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="md:col-span-2">
             <CardHeader>
-              <CardTitle>Client Information</CardTitle>
-              <CardDescription>Detailed information about the client</CardDescription>
+              <CardTitle>Informasi Klien</CardTitle>
+              <CardDescription>Informasi detail tentang klien</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -171,21 +171,21 @@ export default function ClientDetailPage() {
                   <div className="flex items-center gap-3">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Phone</p>
+                      <p className="text-sm font-medium">Telepon</p>
                       <p className="text-sm text-muted-foreground">{clientData.phone}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Address</p>
+                      <p className="text-sm font-medium">Alamat</p>
                       <p className="text-sm text-muted-foreground">{clientData.address}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Contact Person</p>
+                      <p className="text-sm font-medium">Kontak Person</p>
                       <p className="text-sm text-muted-foreground">{clientData.contactPerson}</p>
                     </div>
                   </div>
@@ -194,7 +194,7 @@ export default function ClientDetailPage() {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Join Date</p>
+                      <p className="text-sm font-medium">Tanggal Bergabung</p>
                       <p className="text-sm text-muted-foreground">
                         {new Date(clientData.joinDate).toLocaleDateString()}
                       </p>
@@ -204,7 +204,7 @@ export default function ClientDetailPage() {
               </div>
               <Separator />
               <div>
-                <p className="text-sm font-medium mb-2">Description</p>
+                <p className="text-sm font-medium mb-2">Deskripsi</p>
                 <p className="text-sm text-muted-foreground">{clientData.description}</p>
               </div>
             </CardContent>
@@ -212,27 +212,27 @@ export default function ClientDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common actions for this client</CardDescription>
+              <CardTitle>Aksi Cepat</CardTitle>
+              <CardDescription>Aksi umum untuk klien ini</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button className="w-full justify-start" asChild>
                 <Link href="/projects/new">
                   <Plus className="mr-2 h-4 w-4" />
-                  Create New Project
+                  Buat Proyek Baru
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <Mail className="mr-2 h-4 w-4" />
-                Send Message
+                Kirim Pesan
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Client Info
+                Edit Info Klien
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <FolderOpen className="mr-2 h-4 w-4" />
-                View All Projects
+                Lihat Semua Proyek
               </Button>
             </CardContent>
           </Card>
@@ -240,19 +240,19 @@ export default function ClientDetailPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Project History</CardTitle>
-            <CardDescription>All projects associated with this client</CardDescription>
+            <CardTitle>Riwayat Proyek</CardTitle>
+            <CardDescription>Semua proyek yang terkait dengan klien ini</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Project Name</TableHead>
-                    <TableHead>Progress</TableHead>
-                    <TableHead>Officer</TableHead>
-                    <TableHead>Timeline</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Nama Proyek</TableHead>
+                    <TableHead>Progres</TableHead>
+                    <TableHead>Petugas</TableHead>
+                    <TableHead>Linimasa</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

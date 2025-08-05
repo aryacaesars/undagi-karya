@@ -56,15 +56,15 @@ export default function NewClientPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/clients">Clients</BreadcrumbLink>
+                <BreadcrumbLink href="/clients">Klien</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>New Client</BreadcrumbPage>
+                <BreadcrumbPage>Klien Baru</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -78,14 +78,14 @@ export default function NewClientPage() {
               <Building2 className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Add New Client</h1>
-              <p className="text-muted-foreground">Create a new client profile for your construction projects</p>
+              <h1 className="text-2xl font-bold tracking-tight">Tambah Klien Baru</h1>
+              <p className="text-muted-foreground">Buat profil klien baru untuk proyek konstruksi Anda</p>
             </div>
           </div>
           <Button variant="outline" asChild>
             <Link href="/clients">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Clients
+              Kembali ke Klien
             </Link>
           </Button>
         </div>
@@ -93,39 +93,39 @@ export default function NewClientPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-              <CardDescription>Enter the basic details for the new client</CardDescription>
+              <CardTitle>Informasi Dasar</CardTitle>
+              <CardDescription>Masukkan detail dasar untuk klien baru</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Client Name *</Label>
+                <Label htmlFor="name">Nama Klien *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="Enter client name"
+                  placeholder="Masukkan nama klien"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone">Nomor Telepon *</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="0812-3456-7890"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Alamat</Label>
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleInputChange("address", e.target.value)}
-                  placeholder="Enter full address"
+                  placeholder="Masukkan alamat lengkap"
                 />
               </div>
             </CardContent>
@@ -133,27 +133,27 @@ export default function NewClientPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-              <CardDescription>Primary contact person details</CardDescription>
+              <CardTitle>Informasi Kontak</CardTitle>
+              <CardDescription>Detail kontak utama</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="contactPerson">Contact Person</Label>
+                <Label htmlFor="contactPerson">Kontak Person</Label>
                 <Input
                   id="contactPerson"
                   value={formData.contactPerson}
                   onChange={(e) => handleInputChange("contactPerson", e.target.value)}
-                  placeholder="John Doe"
+                  placeholder="Nama kontak utama"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Deskripsi</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Brief description about the client and their business"
+                  placeholder="Deskripsi singkat tentang klien dan usahanya"
                   rows={4}
                 />
               </div>
@@ -163,10 +163,10 @@ export default function NewClientPage() {
           <div className="flex items-center gap-4">
             <Button type="submit" className="flex-1 max-w-xs">
               <Save className="mr-2 h-4 w-4" />
-              Create Client
+              Buat Klien
             </Button>
             <Button type="button" variant="outline" asChild>
-              <Link href="/clients">Cancel</Link>
+              <Link href="/clients">Batal</Link>
             </Button>
           </div>
         </form>

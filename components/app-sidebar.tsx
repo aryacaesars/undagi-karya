@@ -46,71 +46,57 @@ import { isThisWeek } from "date-fns"
 
 const menuItems = [
   {
-    title: "Dashboard",
+    title: "Dasbor",
     url: "/",
     icon: Home,
   },
   {
-    title: "Client Management",
+    title: "Manajemen Klien",
     icon: Users,
     items: [
-      { title: "All Clients", url: "/clients" },
-      { title: "Add Client", url: "/clients/new" },
+      { title: "Semua Klien", url: "/clients" },
+      { title: "Tambah Klien", url: "/clients/new" },
     ],
   },
   {
-    title: "Project Management",
+    title: "Manajemen Proyek",
     icon: FolderOpen,
     items: [
-      { title: "All Projects", url: "/projects" },
-      { title: "Add Project", url: "/projects/new" },
-      { title: "Project Timeline", url: "/projects/timeline" },
+      { title: "Semua Proyek", url: "/projects" },
+      { title: "Tambah Proyek", url: "/projects/new" },
+      { title: "Timeline Proyek", url: "/projects/timeline" },
     ],
   },
   {
-    title: "Officer Management",
+    title: "Manajemen Petugas",
     items: [
-      { title: "All Officers", url: "/officers" },
-      { title: "Add Officer", url: "/officers/new" },
+      { title: "Semua Petugas", url: "/officers" },
+      { title: "Tambah Petugas", url: "/officers/new" },
     ],
     icon: UserCheck,
   },
   {
-    title: "Vendor Management",
+    title: "Manajemen Vendor",
     items: [
-      { title: "All Vendors", url: "/vendors" },
-      { title: "Add Vendor", url: "/vendors/new" },
+      { title: "Semua Vendor", url: "/vendors" },
+      { title: "Tambah Vendor", url: "/vendors/new" },
     ],
     icon: Truck,
   },
   {
-    title: "Supply Management",
+    title: "Manajemen Persediaan",
     icon: BoxIcon,
     items: [
-      { title: "Supply Items", url: "/supply-items" },
-      { title: "Import Supply", url: "/supply-items/import" },
+      { title: "Item Persediaan", url: "/supply-items" },
+      { title: "Import Persediaan", url: "/supply-items/import" },
     ],
   },
   {
-    title: "Forms & Documents",
+    title: "Formulir & Dokumen",
     icon: ClipboardList,
     items: [
-      { title: "All Forms", url: "/forms" },
-      { title: "Create Form", url: "/forms/new" },
-    ],
-  },
-  {
-    title: "Reports & Analytics",
-    url: "/reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-    items: [
-      { title: "Company Settings", url: "/settings/company" },
-      { title: "User Management", url: "/settings/users" },
-      { title: "System Config", url: "/settings/system" },
+      { title: "Semua Formulir", url: "/forms" },
+      { title: "Buat Formulir", url: "/forms/new" },
     ],
   },
 ]
@@ -125,12 +111,12 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-                  <Building2 className="size-4" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white p-1">
+                  <img src="/icon.png" alt="icon" className="w-full h-full object-contain" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">ContractorPro</span>
-                  <span className="truncate text-xs text-muted-foreground">Construction Management</span>
+                  <span className="truncate font-semibold">Undagi Karya</span>
+                  <span className="truncate text-xs text-muted-foreground">Manajemen Konstruksi</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -139,7 +125,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -198,13 +184,12 @@ export function AppSidebar() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                    <AvatarFallback className="rounded-lg">JD</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">RH</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">John Doe</span>
-                    <span className="truncate text-xs text-muted-foreground">Project Manager</span>
+                    <span className="truncate font-semibold">Rizal Habib</span>
+                    <span className="truncate text-xs text-muted-foreground">Manajer Proyek</span>
                   </div>
-                  <ChevronDown className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -213,29 +198,6 @@ export function AppSidebar() {
                 align="end"
                 sideOffset={4}
               >
-                <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                      <AvatarFallback className="rounded-lg">JD</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">John Doe</span>
-                      <span className="truncate text-xs text-muted-foreground">john.doe@company.com</span>
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Shield className="mr-2 h-4 w-4" />
-                  Account Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Preferences
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

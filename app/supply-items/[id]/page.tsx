@@ -39,9 +39,9 @@ import { useParams } from "next/navigation"
 // Mock data - in real app this would come from API
 const itemData: ItemData = {
   id: 1,
-  name: "Steel Beams (I-Beam 8\")",
+  name: "Balok Baja (I-Beam 8\")",
   sku: "STL-IB8-001",
-  description: "Standard 8-inch I-Beam steel construction material for load-bearing applications. Meets ASTM A36 standards."
+  description: "Material konstruksi balok baja I-Beam 8 inci standar untuk aplikasi penahan beban. Memenuhi standar ASTM A36."
 }
 
 interface ItemData {
@@ -67,11 +67,11 @@ export default function SupplyItemDetailPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/supply-items">Supply Items</BreadcrumbLink>
+                <BreadcrumbLink href="/supply-items">Item Persediaan</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
@@ -101,7 +101,7 @@ export default function SupplyItemDetailPage() {
             <Button asChild>
               <Link href="/supply-requests/new">
                 <ShoppingBag className="mr-2 h-4 w-4" />
-                Request Item
+                Minta Item
               </Link>
             </Button>
           </div>
@@ -110,7 +110,7 @@ export default function SupplyItemDetailPage() {
         <div className="grid gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Item Details</CardTitle>
+              <CardTitle className="text-sm font-medium">Detail Item</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -123,12 +123,12 @@ export default function SupplyItemDetailPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="md:col-span-2">
             <CardHeader>
-              <CardTitle>Item Information</CardTitle>
-              <CardDescription>Detailed information about the item</CardDescription>
+              <CardTitle>Informasi Item</CardTitle>
+              <CardDescription>Informasi detail tentang item</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm font-medium mb-2">Description</p>
+                <p className="text-sm font-medium mb-2">Deskripsi</p>
                 <p className="text-sm text-muted-foreground">{itemData.description}</p>
               </div>
             </CardContent>
@@ -136,23 +136,23 @@ export default function SupplyItemDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common actions for this item</CardDescription>
+              <CardTitle>Aksi Cepat</CardTitle>
+              <CardDescription>Aksi umum untuk item ini</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button className="w-full justify-start" asChild>
                 <Link href="/supply-requests/new">
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Request
+                  Buat Permintaan
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <Edit className="mr-2 h-4 w-4" />
-                Update Stock
+                Perbarui Stok
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <BarChart className="mr-2 h-4 w-4" />
-                View Usage Reports
+                Lihat Laporan Penggunaan
               </Button>
             </CardContent>
           </Card>

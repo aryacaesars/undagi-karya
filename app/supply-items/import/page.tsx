@@ -52,33 +52,33 @@ export default function ImportSupplyItemsPage() {
         const mockPreviewData: ImportItem[] = [
           {
             id: "1",
-            name: "Steel I-Beam 25ft",
-            unit: "piece",
-            specifications: "25ft length, Grade A36 steel",
+            name: "Balok Baja I-Beam 25ft",
+            unit: "buah",
+            specifications: "Panjang 25ft, Baja Grade A36",
             status: "valid",
             errors: [],
           },
           {
             id: "2",
-            name: "Concrete Mix Premium",
-            unit: "cubic yard",
-            specifications: "5000 PSI, Portland cement",
+            name: "Campuran Beton Premium",
+            unit: "meter kubik",
+            specifications: "5000 PSI, Semen Portland",
             status: "valid",
             errors: [],
           },
           {
             id: "3",
-            name: "Electrical Wire",
+            name: "Kabel Listrik",
             unit: "",
-            specifications: "Missing specifications",
+            specifications: "Spesifikasi tidak ada",
             status: "error",
-            errors: ["Specifications are required"],
+            errors: ["Spesifikasi wajib diisi"],
           },
           {
             id: "4",
-            name: "Plywood Sheet 4x8 Premium",
-            unit: "sheet",
-            specifications: "4x8 feet, Grade A/A, marine grade",
+            name: "Lembaran Plywood 4x8 Premium",
+            unit: "lembar",
+            specifications: "4x8 kaki, Grade A/A, kualitas marine",
             status: "valid",
             errors: [],
           },
@@ -113,9 +113,9 @@ export default function ImportSupplyItemsPage() {
   const downloadTemplate = () => {
     // Create CSV template
     const csvContent = `Name,Unit,Specifications
-Steel I-Beam 20ft,piece,"20ft length, Grade A36 steel"
-Concrete Mix,cubic yard,"4000 PSI, Portland cement"
-Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
+Balok Baja I-Beam 20ft,buah,"Panjang 20ft, Baja Grade A36"
+Campuran Beton,meter kubik,"4000 PSI, Semen Portland"
+Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
 
     const blob = new Blob([csvContent], { type: "text/csv" })
     const url = window.URL.createObjectURL(blob)
@@ -135,10 +135,16 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
 
     const { color, icon: Icon } = config[status as keyof typeof config]
 
+    const statusMap = {
+      valid: "Valid",
+      error: "Error", 
+      warning: "Peringatan"
+    }
+
     return (
       <Badge className={color}>
         <Icon className="w-3 h-3 mr-1" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {statusMap[status as keyof typeof statusMap]}
       </Badge>
     )
   }
@@ -156,15 +162,15 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/supply-items">Supply Items</BreadcrumbLink>
+                <BreadcrumbLink href="/supply-items">Item Persediaan</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Import Items</BreadcrumbPage>
+                <BreadcrumbPage>Import Item</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -178,14 +184,14 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
               <FileSpreadsheet className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Import Supply Items</h1>
-              <p className="text-muted-foreground">Import supply items from Excel or CSV files</p>
+              <h1 className="text-2xl font-bold tracking-tight">Import Item Persediaan</h1>
+              <p className="text-muted-foreground">Import item persediaan dari file Excel atau CSV</p>
             </div>
           </div>
           <Button variant="outline" asChild>
             <Link href="/supply-items">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Supply Items
+              Kembali ke Item Persediaan
             </Link>
           </Button>
         </div>
@@ -196,12 +202,12 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
               <CardHeader>
                 <CardTitle>Upload File</CardTitle>
                 <CardDescription>
-                  Upload an Excel (.xlsx) or CSV (.csv) file containing supply items data
+                  Upload file Excel (.xlsx) atau CSV (.csv) yang berisi data item persediaan
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="file">Select File</Label>
+                  <Label htmlFor="file">Pilih File</Label>
                   <Input
                     id="file"
                     type="file"
@@ -215,7 +221,7 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
                   <Alert>
                     <FileSpreadsheet className="h-4 w-4" />
                     <AlertDescription>
-                      Selected file: <strong>{file.name}</strong> ({(file.size / 1024).toFixed(1)} KB)
+                      File terpilih: <strong>{file.name}</strong> ({(file.size / 1024).toFixed(1)} KB)
                     </AlertDescription>
                   </Alert>
                 )}
@@ -223,7 +229,7 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
                 <div className="flex gap-2">
                   <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="flex-1">
                     <Upload className="mr-2 h-4 w-4" />
-                    Choose File
+                    Pilih File
                   </Button>
                   <Button onClick={downloadTemplate} variant="outline">
                     <Download className="mr-2 h-4 w-4" />
@@ -235,28 +241,28 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
 
             <Card>
               <CardHeader>
-                <CardTitle>File Format Requirements</CardTitle>
-                <CardDescription>Your file should contain the following columns</CardDescription>
+                <CardTitle>Persyaratan Format File</CardTitle>
+                <CardDescription>File Anda harus berisi kolom-kolom berikut</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">Required Columns:</div>
+                    <div className="font-medium">Kolom Wajib:</div>
                     <div></div>
-                    <div>• Name</div>
+                    <div>• Nama</div>
                   </div>
                   <Separator />
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">Optional Columns:</div>
+                    <div className="font-medium">Kolom Opsional:</div>
                     <div></div>
-                    <div>• Unit</div>
-                    <div>• Specifications</div>
+                    <div>• Satuan</div>
+                    <div>• Spesifikasi</div>
                   </div>
                 </div>
 
                 <Alert className="mt-4">
                   <AlertDescription>
-                    <strong>Tip:</strong> Download the template file to see the exact format required.
+                    <strong>Tips:</strong> Download file template untuk melihat format yang tepat.
                   </AlertDescription>
                 </Alert>
               </CardContent>
@@ -268,20 +274,20 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Import Preview</CardTitle>
-                <CardDescription>Review the data before importing. Fix any errors shown below.</CardDescription>
+                <CardTitle>Pratinjau Import</CardTitle>
+                <CardDescription>Tinjau data sebelum mengimport. Perbaiki error yang ditampilkan di bawah.</CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <Badge className="bg-green-100 text-green-800">{validItems} Valid</Badge>
-                {warningItems > 0 && <Badge className="bg-yellow-100 text-yellow-800">{warningItems} Warnings</Badge>}
-                {errorItems > 0 && <Badge className="bg-red-100 text-red-800">{errorItems} Errors</Badge>}
+                {warningItems > 0 && <Badge className="bg-yellow-100 text-yellow-800">{warningItems} Peringatan</Badge>}
+                {errorItems > 0 && <Badge className="bg-red-100 text-red-800">{errorItems} Error</Badge>}
               </div>
             </CardHeader>
             <CardContent>
               {importing && (
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Importing items...</span>
+                    <span className="text-sm font-medium">Mengimport item...</span>
                     <span className="text-sm text-muted-foreground">{importProgress}%</span>
                   </div>
                   <Progress value={importProgress} className="h-2" />
@@ -293,11 +299,11 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
                   <TableHeader>
                     <TableRow>
                       <TableHead>Status</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Unit</TableHead>
-                      <TableHead>Specifications</TableHead>
-                      <TableHead>Issues</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>Nama</TableHead>
+                      <TableHead>Satuan</TableHead>
+                      <TableHead>Spesifikasi</TableHead>
+                      <TableHead>Masalah</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -336,17 +342,17 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
 
               <div className="flex items-center justify-between mt-4">
                 <div className="text-sm text-muted-foreground">
-                  {previewData.length} items ready for import
+                  {previewData.length} item siap untuk diimport
                   {errorItems > 0 && (
-                    <span className="text-red-600 ml-2">({errorItems} items have errors and will be skipped)</span>
+                    <span className="text-red-600 ml-2">({errorItems} item memiliki error dan akan dilewati)</span>
                   )}
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setPreviewData([])}>
-                    Cancel
+                    Batal
                   </Button>
                   <Button onClick={handleImport} disabled={importing || validItems === 0}>
-                    {importing ? "Importing..." : `Import ${validItems} Items`}
+                    {importing ? "Mengimport..." : `Import ${validItems} Item`}
                   </Button>
                 </div>
               </div>
@@ -359,34 +365,34 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-600" />
-                Import Completed Successfully
+                Import Berhasil Diselesaikan
               </CardTitle>
-              <CardDescription>Your supply items have been imported successfully</CardDescription>
+              <CardDescription>Item persediaan Anda berhasil diimport</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="text-center p-4 border rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{validItems}</div>
-                    <div className="text-sm text-muted-foreground">Items Imported</div>
+                    <div className="text-sm text-muted-foreground">Item Diimport</div>
                   </div>
                   {warningItems > 0 && (
                     <div className="text-center p-4 border rounded-lg">
                       <div className="text-2xl font-bold text-yellow-600">{warningItems}</div>
-                      <div className="text-sm text-muted-foreground">With Warnings</div>
+                      <div className="text-sm text-muted-foreground">Dengan Peringatan</div>
                     </div>
                   )}
                   {errorItems > 0 && (
                     <div className="text-center p-4 border rounded-lg">
                       <div className="text-2xl font-bold text-red-600">{errorItems}</div>
-                      <div className="text-sm text-muted-foreground">Skipped (Errors)</div>
+                      <div className="text-sm text-muted-foreground">Dilewati (Error)</div>
                     </div>
                   )}
                 </div>
 
                 <div className="flex gap-2">
                   <Button asChild>
-                    <Link href="/supply-items">View Supply Items</Link>
+                    <Link href="/supply-items">Lihat Item Persediaan</Link>
                   </Button>
                   <Button
                     variant="outline"
@@ -397,7 +403,7 @@ Electrical Wire 12 AWG,foot,"THHN/THWN-2, 600V rated"`
                       setImportProgress(0)
                     }}
                   >
-                    Import More Items
+                    Import Item Lainnya
                   </Button>
                 </div>
               </div>

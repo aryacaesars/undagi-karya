@@ -143,7 +143,7 @@ interface FormPDFProps {
 
 // Create Document Component
 export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, signatureUrl }: FormPDFProps) => (
-  <Document title="Supply Request Form">
+  <Document title="Formulir Permintaan Persediaan">
     {/* First page: up to 6 items */}
     <Page size="A4" style={styles.page}>
       {/* Header with logo and company info */}
@@ -161,25 +161,25 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
 
       {/* Document title */}
       <View style={styles.title}>
-        <Text>SUPPLY REQUEST FORM</Text>
+        <Text>FORMULIR PERMINTAAN PERSEDIAAN</Text>
       </View>
 
       {/* Basic form information */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Form Information</Text>
+        <Text style={styles.sectionTitle}>Informasi Formulir</Text>
         <View style={styles.grid}>
           <View style={styles.field}>
-            <Text style={styles.label}>Project:</Text>
+            <Text style={styles.label}>Proyek:</Text>
             <Text style={styles.value}>
-              {formData.project === 'downtown-mall' ? 'Downtown Mall Phase 2' :
-               formData.project === 'residential-complex' ? 'Residential Complex A' :
-               formData.project === 'highway-bridge' ? 'Highway Bridge Renovation' :
-               formData.project === 'office-building' ? 'Eco-Friendly Office Building' : 
+              {formData.project === 'downtown-mall' ? 'Mall Downtown Fase 2' :
+               formData.project === 'residential-complex' ? 'Kompleks Perumahan A' :
+               formData.project === 'highway-bridge' ? 'Renovasi Jembatan Jalan Raya' :
+               formData.project === 'office-building' ? 'Gedung Kantor Ramah Lingkungan' : 
                formData.project}
             </Text>
           </View>
           <View style={styles.field}>
-            <Text style={styles.label}>Type:</Text>
+            <Text style={styles.label}>Tipe:</Text>
             <Text style={styles.value}>
               {formData.type === 'renovasi' ? 'Renovasi' :
                formData.type === 'instalasi' ? 'Instalasi' :
@@ -189,11 +189,11 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             </Text>
           </View>
           <View style={styles.field}>
-            <Text style={styles.label}>Project Officer:</Text>
+            <Text style={styles.label}>Petugas Proyek:</Text>
             <Text style={styles.value}>{formData.projectOfficer}</Text>
           </View>
           <View style={styles.field}>
-            <Text style={styles.label}>Date:</Text>
+            <Text style={styles.label}>Tanggal:</Text>
             <Text style={styles.value}>{createdDate.toLocaleDateString()}</Text>
           </View>
         </View>
@@ -201,14 +201,14 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
 
       {/* Items table (first 6 items) */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Requested Items</Text>
+        <Text style={styles.sectionTitle}>Item yang Diminta</Text>
         <View style={styles.table}>
           <View style={styles.tableHeaderRow}>
-            <View style={styles.tableColWide}><Text>Item Name</Text></View>
+            <View style={styles.tableColWide}><Text>Nama Item</Text></View>
             <View style={styles.tableColNarrow}><Text>Qty</Text></View>
-            <View style={styles.tableColNarrow}><Text>Unit</Text></View>
-            <View style={styles.tableCol}><Text>Specifications</Text></View>
-            <View style={styles.tableCol}><Text>Notes</Text></View>
+            <View style={styles.tableColNarrow}><Text>Satuan</Text></View>
+            <View style={styles.tableCol}><Text>Spesifikasi</Text></View>
+            <View style={styles.tableCol}><Text>Catatan</Text></View>
           </View>
           {(items.slice(0, 6)).map((item, index) => (
             <View key={index} style={styles.tableRow}>
@@ -220,7 +220,7 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             </View>
           ))}
         </View>
-        <Text>Total Items: {items.length}</Text>
+        <Text>Total Item: {items.length}</Text>
       </View>
 
       {/* Only show signature and footer on last page */}
@@ -228,7 +228,7 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
         <>
           <View style={styles.signature}>
             <View style={styles.signatureBox}>
-              <Text style={styles.signatureText}>Project Manager</Text>
+              <Text style={styles.signatureText}>Manajer Proyek</Text>
               <Image 
                 src={signatureUrl || SIGNATURE_IMAGE}
                 style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
@@ -237,7 +237,7 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             </View>
           </View>
           <View style={styles.footer}>
-            <Text>Form ID: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Generated on: {createdDate.toLocaleString()}</Text>
+            <Text>ID Formulir: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Dibuat pada: {createdDate.toLocaleString()}</Text>
           </View>
         </>
       )}
@@ -253,28 +253,28 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             style={styles.logo} 
           />
           <View style={styles.companyDetails}>
-            <Text>UNDAGI KARYA</Text>
-            <Text>Construction & Development</Text>
-            <Text>Email: info@undagi-karya.com</Text>
-            <Text>Phone: (021) 1234-5678</Text>
+            <Text>PT GURITA BISNIS UNDAGI</Text>
+            <Text>Konstruksi & Pengembangan</Text>
+            <Text>Email: undagioffice@gmail.com</Text>
+            <Text>Phone: +62 888-0188-7428</Text>
           </View>
         </View>
 
         {/* Document title (optional, can be repeated or omitted) */}
         <View style={styles.title}>
-          <Text>SUPPLY REQUEST FORM (cont'd)</Text>
+          <Text>FORMULIR PERMINTAAN PERSEDIAAN (lanjutan)</Text>
         </View>
 
         {/* Items table (remaining items) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Requested Items (continued)</Text>
+          <Text style={styles.sectionTitle}>Item yang Diminta (lanjutan)</Text>
           <View style={styles.table}>
             <View style={styles.tableHeaderRow}>
-              <View style={styles.tableColWide}><Text>Item Name</Text></View>
+              <View style={styles.tableColWide}><Text>Nama Item</Text></View>
               <View style={styles.tableColNarrow}><Text>Qty</Text></View>
-              <View style={styles.tableColNarrow}><Text>Unit</Text></View>
-              <View style={styles.tableCol}><Text>Specifications</Text></View>
-              <View style={styles.tableCol}><Text>Notes</Text></View>
+              <View style={styles.tableColNarrow}><Text>Satuan</Text></View>
+              <View style={styles.tableCol}><Text>Spesifikasi</Text></View>
+              <View style={styles.tableCol}><Text>Catatan</Text></View>
             </View>
             {(items.slice(6)).map((item, index) => (
               <View key={index + 6} style={styles.tableRow}>
@@ -295,11 +295,11 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
               src={signatureUrl || SIGNATURE_IMAGE}
               style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
             />
-            <Text style={styles.signatureText}>Approved by: Rizal Habib</Text>
+            <Text style={styles.signatureText}>Disetujui oleh: Rizal Habib</Text>
           </View>
         </View>
         <View style={styles.footer}>
-          <Text>Form ID: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Generated on: {createdDate.toLocaleString()}</Text>
+          <Text>ID Formulir: {Math.random().toString(36).substring(2, 10).toUpperCase()} | Dibuat pada: {createdDate.toLocaleString()}</Text>
         </View>
       </Page>
     )}

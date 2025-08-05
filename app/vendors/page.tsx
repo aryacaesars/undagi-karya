@@ -120,11 +120,11 @@ export default function VendorsPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Vendors</BreadcrumbPage>
+                <BreadcrumbPage>Vendor</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -134,13 +134,13 @@ export default function VendorsPage() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Vendor Management</h1>
-            <p className="text-muted-foreground">Manage suppliers, vendors, and track their performance</p>
+            <h1 className="text-2xl font-bold tracking-tight">Manajemen Vendor</h1>
+            <p className="text-muted-foreground">Kelola pemasok, vendor, dan pantau kinerja mereka</p>
           </div>
           <Button asChild>
             <Link href="/vendors/new">
               <Plus className="mr-2 h-4 w-4" />
-              Add Vendor
+              Tambah Vendor
             </Link>
           </Button>
         </div>
@@ -148,39 +148,39 @@ export default function VendorsPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Vendors</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Vendor</CardTitle>
               <Truck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{vendorsData.length}</div>
-              <p className="text-xs text-muted-foreground">All vendors</p>
+              <p className="text-xs text-muted-foreground">Semua vendor</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Pesanan</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {vendorsData.reduce((sum, vendor) => sum + vendor.totalOrders, 0)}
               </div>
-              <p className="text-xs text-muted-foreground">All time orders</p>
+              <p className="text-xs text-muted-foreground">Semua pesanan</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Vendors</CardTitle>
-            <CardDescription>Manage your vendor relationships and track performance metrics</CardDescription>
+            <CardTitle>Semua Vendor</CardTitle>
+            <CardDescription>Kelola hubungan vendor Anda dan pantau metrik kinerja</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search vendors..."
+                  placeholder="Cari vendor..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -193,10 +193,10 @@ export default function VendorsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Vendor</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Orders</TableHead>
-                    <TableHead>Payment Terms</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Kontak</TableHead>
+                    <TableHead>Pesanan</TableHead>
+                    <TableHead>Syarat Pembayaran</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -213,23 +213,23 @@ export default function VendorsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{vendor.totalOrders} orders</Badge>
+                        <Badge variant="outline">{vendor.totalOrders} pesanan</Badge>
                       </TableCell>
                       <TableCell>{vendor.paymentTerms}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">Buka menu</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
                               <Link href={`/vendors/${vendor.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
-                                View Details
+                                Lihat Detail
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
@@ -237,7 +237,7 @@ export default function VendorsPage() {
                               Edit Vendor
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Create Order</DropdownMenuItem>
+                            <DropdownMenuItem>Buat Pesanan</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

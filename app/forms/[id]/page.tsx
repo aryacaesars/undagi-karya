@@ -21,17 +21,14 @@ import { useParams, useRouter } from "next/navigation";
 const formsData = [
   {
     id: "FORM-2025-001",
-    title: "Project Budget Approval",
-    submitter: "John Doe",
+    title: "Persetujuan Anggaran Proyek",
     dateSubmitted: "2025-07-28",
-    status: "Pending",
-    priority: "High",
-    type: "Budget",
-    project: "Downtown Mall Phase 2",
+    type: "Anggaran",
+    project: "Mall Downtown Fase 2",
     projectOfficer: "John Smith",
     items: [
-      { itemName: "Steel I-Beam 20ft", quantity: 10, unit: "piece", specifications: "20ft length, Grade A36 steel", notes: "" },
-      { itemName: "Concrete Mix (High Strength)", quantity: 5, unit: "cubic yard", specifications: "4000 PSI, Portland cement", notes: "" },
+      { itemName: "Baja I-Beam 20ft", quantity: 10, unit: "buah", specifications: "Panjang 20ft, Baja Grade A36", notes: "" },
+      { itemName: "Campuran Beton (Kuat Tinggi)", quantity: 5, unit: "meter kubik", specifications: "4000 PSI, Semen Portland", notes: "" },
     ],
     submissionDate: "2025-07-28"
   },
@@ -56,15 +53,15 @@ export default function FormDetailPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/forms">Forms</BreadcrumbLink>
+                <BreadcrumbLink href="/forms">Formulir</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Form Detail</BreadcrumbPage>
+                <BreadcrumbPage>Detail Formulir</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -72,36 +69,33 @@ export default function FormDetailPage() {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <Button asChild variant="outline" className="w-fit mb-2">
-          <Link href="/forms">← Back to Forms</Link>
+          <Link href="/forms">← Kembali ke Formulir</Link>
         </Button>
         <Card>
           <CardHeader>
             <CardTitle>{form.title}</CardTitle>
-            <CardDescription>Form ID: {form.id}</CardDescription>
+            <CardDescription>ID Formulir: {form.id}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <p><b>Project:</b> {form.project}</p>
-                <p><b>Type:</b> {form.type}</p>
-                <p><b>Project Officer:</b> {form.projectOfficer}</p>
-                <p><b>Submitter:</b> {form.submitter}</p>
-                <p><b>Status:</b> {form.status}</p>
-                <p><b>Priority:</b> {form.priority}</p>
+                <p><b>Proyek:</b> {form.project}</p>
+                <p><b>Tipe:</b> {form.type}</p>
+                <p><b>Petugas Proyek:</b> {form.projectOfficer}</p>
                 <p><b>Tanggal Pengajuan:</b> {form.submissionDate}</p>
               </div>
             </div>
             <Separator />
             <div>
-              <h3 className="font-semibold mb-2">Requested Items</h3>
+              <h3 className="font-semibold mb-2">Barang yang Diminta</h3>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Item Name</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Unit</TableHead>
-                    <TableHead>Specifications</TableHead>
-                    <TableHead>Notes</TableHead>
+                    <TableHead>Nama Barang</TableHead>
+                    <TableHead>Jumlah</TableHead>
+                    <TableHead>Satuan</TableHead>
+                    <TableHead>Spesifikasi</TableHead>
+                    <TableHead>Catatan</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

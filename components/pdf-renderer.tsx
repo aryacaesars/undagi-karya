@@ -28,7 +28,7 @@ export const PDFDownloader = ({ formData, items }: PDFRendererProps) => {
   }, []);
 
   if (!isClient) {
-    return <div>Loading PDF generator...</div>;
+    return <div>Memuat generator PDF...</div>;
   }
 
   return (
@@ -38,10 +38,10 @@ export const PDFDownloader = ({ formData, items }: PDFRendererProps) => {
       className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-primary-foreground hover:bg-blue-700 h-10 px-4 py-2"
     >
       {({ blob, url, loading, error }) => 
-        loading ? 'Generating PDF...' : (
+        loading ? 'Membuat PDF...' : (
           <>
             <FileDown className="mr-2 h-4 w-4" />
-            Download PDF
+            Unduh PDF
           </>
         )
       }
@@ -61,7 +61,7 @@ export const PDFPreviewerWrapper = ({ formData, items }: PDFRendererProps) => {
   }, []);
 
   if (!isClient) {
-    return <div className="w-full h-full flex items-center justify-center">Loading PDF preview...</div>;
+    return <div className="w-full h-full flex items-center justify-center">Memuat pratinjau PDF...</div>;
   }
 
   return (

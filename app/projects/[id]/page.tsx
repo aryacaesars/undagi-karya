@@ -33,49 +33,49 @@ import { useParams } from "next/navigation"
 // Mock data
 const projectData = {
   id: 1,
-  name: "Downtown Mall Phase 2",
+  name: "Mall Downtown Fase 2",
   client: "MegaBuild Corporation",
   officer: "John Smith",
   progress: 75,
   startDate: "2023-03-15",
   endDate: "2024-01-30",
-  description: "Expansion of the existing mall with new retail spaces, food court, and parking facilities.",
+  description: "Perluasan mall yang sudah ada dengan ruang ritel baru, food court, dan fasilitas parkir.",
   type: "renovasi",
-  location: "Downtown Business District, New York",
+  location: "Distrik Bisnis Downtown, New York",
 }
 
 const projectStages = [
   {
     id: 1,
-    name: "Foundation & Site Preparation",
+    name: "Pondasi & Persiapan Lokasi",
     progress: 100,
     startDate: "2023-03-15",
     endDate: "2023-05-30",
   },
   {
     id: 2,
-    name: "Structural Framework",
+    name: "Kerangka Struktural",
     progress: 100,
     startDate: "2023-06-01",
     endDate: "2023-08-15",
   },
   {
     id: 3,
-    name: "Interior Construction",
+    name: "Konstruksi Interior",
     progress: 60,
     startDate: "2023-08-16",
     endDate: "2023-11-30",
   },
   {
     id: 4,
-    name: "Electrical & Plumbing",
+    name: "Listrik & Plambing",
     progress: 30,
     startDate: "2023-09-01",
     endDate: "2023-12-15",
   },
   {
     id: 5,
-    name: "Final Finishing",
+    name: "Finishing Akhir",
     progress: 0,
     startDate: "2023-12-01",
     endDate: "2024-01-30",
@@ -85,21 +85,21 @@ const projectStages = [
 const supplyRequests = [
   {
     id: "SR-001",
-    description: "Steel beams and concrete",
+    description: "Balok baja dan beton",
     requestDate: "2023-08-15",
     estimatedCost: 45000,
     vendor: "Steel & Materials Co.",
   },
   {
     id: "SR-002",
-    description: "Electrical components",
+    description: "Komponen listrik",
     requestDate: "2023-08-20",
     estimatedCost: 25000,
     vendor: "ElectricPro Supplies",
   },
   {
     id: "SR-003",
-    description: "Interior fixtures",
+    description: "Perlengkapan interior",
     requestDate: "2023-08-22",
     estimatedCost: 35000,
     vendor: "Interior Solutions",
@@ -107,10 +107,10 @@ const supplyRequests = [
 ]
 
 const projectDocuments = [
-  { id: 1, name: "Project Blueprint.pdf", type: "Blueprint", uploadDate: "2023-03-10", size: "2.4 MB" },
-  { id: 2, name: "Building Permit.pdf", type: "Permit", uploadDate: "2023-03-12", size: "1.1 MB" },
-  { id: 3, name: "Safety Report.pdf", type: "Report", uploadDate: "2023-08-15", size: "3.2 MB" },
-  { id: 4, name: "Progress Photos.zip", type: "Photos", uploadDate: "2023-08-20", size: "15.7 MB" },
+  { id: 1, name: "Cetak Biru Proyek.pdf", type: "Cetak Biru", uploadDate: "2023-03-10", size: "2.4 MB" },
+  { id: 2, name: "Izin Bangunan.pdf", type: "Izin", uploadDate: "2023-03-12", size: "1.1 MB" },
+  { id: 3, name: "Laporan Keselamatan.pdf", type: "Laporan", uploadDate: "2023-08-15", size: "3.2 MB" },
+  { id: 4, name: "Foto Progres.zip", type: "Foto", uploadDate: "2023-08-20", size: "15.7 MB" },
 ]
 
 export default function ProjectDetailPage() {
@@ -138,11 +138,11 @@ export default function ProjectDetailPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+                <BreadcrumbLink href="/projects">Proyek</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
@@ -169,13 +169,7 @@ export default function ProjectDetailPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Project
-            </Button>
-            <Button asChild>
-              <Link href="/supply-requests/new">
-                <Plus className="mr-2 h-4 w-4" />
-                Supply Request
-              </Link>
+              Edit Proyek
             </Button>
           </div>
         </div>
@@ -183,7 +177,7 @@ export default function ProjectDetailPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Progress</CardTitle>
+              <CardTitle className="text-sm font-medium">Progres</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -193,19 +187,19 @@ export default function ProjectDetailPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Timeline</CardTitle>
+              <CardTitle className="text-sm font-medium">Jadwal</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {Math.ceil((new Date(projectData.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
               </div>
-              <p className="text-xs text-muted-foreground">days remaining</p>
+              <p className="text-xs text-muted-foreground">hari tersisa</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Officer</CardTitle>
+              <CardTitle className="text-sm font-medium">Petugas</CardTitle>
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -217,38 +211,38 @@ export default function ProjectDetailPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="stages">Project Stages</TabsTrigger>
-            <TabsTrigger value="supplies">Supply Requests</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="overview">Ringkasan</TabsTrigger>
+            <TabsTrigger value="stages">Tahap Proyek</TabsTrigger>
+            <TabsTrigger value="supplies">Permintaan Persediaan</TabsTrigger>
+            <TabsTrigger value="documents">Dokumen</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Project Information</CardTitle>
-                <CardDescription>Basic details about the project</CardDescription>
+                <CardTitle>Informasi Proyek</CardTitle>
+                <CardDescription>Detail dasar tentang proyek</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4">
                   <div className="flex items-center gap-3">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Client</p>
+                      <p className="text-sm font-medium">Klien</p>
                       <p className="text-sm text-muted-foreground">{projectData.client}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Project Officer</p>
+                      <p className="text-sm font-medium">Petugas Proyek</p>
                       <p className="text-sm text-muted-foreground">{projectData.officer}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Timeline</p>
+                      <p className="text-sm font-medium">Jadwal</p>
                       <p className="text-sm text-muted-foreground">
                         {new Date(projectData.startDate).toLocaleDateString()} -{" "}
                         {new Date(projectData.endDate).toLocaleDateString()}
@@ -258,21 +252,21 @@ export default function ProjectDetailPage() {
                   <div className="flex items-center gap-3">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Location</p>
+                      <p className="text-sm font-medium">Lokasi</p>
                       <p className="text-sm text-muted-foreground">{projectData.location}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Type</p>
+                      <p className="text-sm font-medium">Tipe</p>
                       <p className="text-sm text-muted-foreground">{projectData.type}</p>
                     </div>
                   </div>
                 </div>
                 <Separator />
                 <div>
-                  <p className="text-sm font-medium mb-2">Description</p>
+                  <p className="text-sm font-medium mb-2">Deskripsi</p>
                   <p className="text-sm text-muted-foreground">{projectData.description}</p>
                 </div>
               </CardContent>
@@ -282,8 +276,8 @@ export default function ProjectDetailPage() {
           <TabsContent value="stages" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Project Stages</CardTitle>
-                <CardDescription>Track progress across different project phases</CardDescription>
+                <CardTitle>Tahap Proyek</CardTitle>
+                <CardDescription>Lacak progres di berbagai fase proyek</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -294,12 +288,12 @@ export default function ProjectDetailPage() {
                       </div>
                       <div className="grid gap-2 md:grid-cols-2 text-sm text-muted-foreground mb-3">
                         <div>
-                          <span className="font-medium">Timeline:</span>{" "}
+                          <span className="font-medium">Jadwal:</span>{" "}
                           {new Date(stage.startDate).toLocaleDateString()} -{" "}
                           {new Date(stage.endDate).toLocaleDateString()}
                         </div>
                         <div>
-                          <span className="font-medium">Progress:</span> {stage.progress}%
+                          <span className="font-medium">Progres:</span> {stage.progress}%
                         </div>
                       </div>
                       <Progress value={stage.progress} className="h-2" />
@@ -314,13 +308,13 @@ export default function ProjectDetailPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>Supply Requests</CardTitle>
-                  <CardDescription>Material and equipment requests for this project</CardDescription>
+                  <CardTitle>Permintaan Persediaan</CardTitle>
+                  <CardDescription>Permintaan material dan peralatan untuk proyek ini</CardDescription>
                 </div>
                 <Button asChild>
                   <Link href="/supply-requests/new">
                     <Plus className="mr-2 h-4 w-4" />
-                    New Request
+                    Permintaan Baru
                   </Link>
                 </Button>
               </CardHeader>
@@ -329,11 +323,11 @@ export default function ProjectDetailPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Request ID</TableHead>
-                        <TableHead>Description</TableHead>
+                        <TableHead>ID Permintaan</TableHead>
+                        <TableHead>Deskripsi</TableHead>
                         <TableHead>Vendor</TableHead>
-                        <TableHead>Cost</TableHead>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Biaya</TableHead>
+                        <TableHead>Tanggal</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -357,12 +351,12 @@ export default function ProjectDetailPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>Project Documents</CardTitle>
-                  <CardDescription>Files and documents related to this project</CardDescription>
+                  <CardTitle>Dokumen Proyek</CardTitle>
+                  <CardDescription>File dan dokumen yang terkait dengan proyek ini</CardDescription>
                 </div>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Upload Document
+                  Upload Dokumen
                 </Button>
               </CardHeader>
               <CardContent>
