@@ -12,8 +12,6 @@ interface PDFRendererProps {
     project: string;
     type: string;
     projectOfficer: string;
-    description: string;
-    notes: string;
   };
   items: RequestItem[];
 }
@@ -21,7 +19,7 @@ interface PDFRendererProps {
 export const PDFDownloader = ({ formData, items }: PDFRendererProps) => {
   const [isClient, setIsClient] = useState(false);
   // Use the custom hook to get the logo as a data URL
-  const logoUrl = usePublicImage('/placeholder-logo.png');
+  const logoUrl = usePublicImage('/logo.png');
   // Use the custom hook to get the signature as a data URL
   const signatureUrl = usePublicImage('/ttd.png');
 
@@ -54,7 +52,7 @@ export const PDFDownloader = ({ formData, items }: PDFRendererProps) => {
 export const PDFPreviewerWrapper = ({ formData, items }: PDFRendererProps) => {
   const [isClient, setIsClient] = useState(false);
   // Use the custom hook to get the logo as a data URL
-  const logoUrl = usePublicImage('/placeholder-logo.png');
+  const logoUrl = usePublicImage('/logo.png');
   // Use the custom hook to get the signature as a data URL
   const signatureUrl = usePublicImage('/ttd.png');
 

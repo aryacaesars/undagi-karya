@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 100,
-    height: 50,
+    width: 70,
+    height: 35,
   },
   companyDetails: {
     alignItems: 'flex-end',
@@ -133,8 +133,7 @@ interface FormPDFProps {
     project: string;
     type: string;
     projectOfficer: string;
-    description: string;
-    notes: string;
+
   };
   items: RequestItem[];
   createdDate?: Date;
@@ -154,10 +153,9 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
           style={styles.logo} 
         />
         <View style={styles.companyDetails}>
-          <Text>UNDAGI KARYA</Text>
-          <Text>Construction & Development</Text>
-          <Text>Email: info@undagi-karya.com</Text>
-          <Text>Phone: (021) 1234-5678</Text>
+          <Text>PT GURITA BISNIS UNDAGI</Text>
+          <Text>Email: undagioffice@gmail.com</Text>
+          <Text>Phone: +62 888-0188-7428</Text>
         </View>
       </View>
 
@@ -230,11 +228,12 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
         <>
           <View style={styles.signature}>
             <View style={styles.signatureBox}>
+              <Text style={styles.signatureText}>Project Manager</Text>
               <Image 
                 src={signatureUrl || SIGNATURE_IMAGE}
                 style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
               />
-              <Text style={styles.signatureText}>Approved by: Rizal Habib</Text>
+              <Text style={styles.signatureText}>Rizal Habib</Text>
             </View>
           </View>
           <View style={styles.footer}>
