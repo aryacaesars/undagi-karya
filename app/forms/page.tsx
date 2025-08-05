@@ -286,7 +286,7 @@ export default function FormsPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                              <Link href={`/form/${form.id}`}>
+                              <Link href={`/forms/${form.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </Link>

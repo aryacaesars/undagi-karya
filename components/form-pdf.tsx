@@ -110,10 +110,11 @@ const styles = StyleSheet.create({
   signature: {
     marginTop: 50,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end', // align to right
   },
   signatureBox: {
     width: '40%',
+    alignItems: 'center', // center content in box
   },
   signatureLine: {
     marginTop: 70,
@@ -202,16 +203,6 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
             <Text style={styles.value}>{createdDate.toLocaleDateString()}</Text>
           </View>
         </View>
-        
-        <View style={styles.fullWidthField}>
-          <Text style={styles.label}>Description:</Text>
-          <Text style={styles.value}>{formData.description || '-'}</Text>
-        </View>
-        
-        <View style={styles.fullWidthField}>
-          <Text style={styles.label}>Additional Notes:</Text>
-          <Text style={styles.value}>{formData.notes || '-'}</Text>
-        </View>
       </View>
 
       {/* Items table */}
@@ -243,12 +234,11 @@ export const FormPDF = ({ formData, items, createdDate = new Date(), logoUrl, si
 
       {/* Signatures section */}
       <View style={styles.signature}>
-        
         <View style={styles.signatureBox}>
           {/* Use the signature image from public folder */}
           <Image 
             src={signatureUrl || SIGNATURE_IMAGE}
-            style={{ width: 120, height: 50, marginBottom: 10, alignSelf: 'center' }}
+            style={{ width: '100%', height: 70, marginBottom: 10, objectFit: 'contain' }}
           />
           <Text style={styles.signatureText}>Approved by: Rizal Habib</Text>
         </View>

@@ -89,6 +89,7 @@ export default function NewFormPage() {
     project: "",
     type: "",
     projectOfficer: "",
+    submissionDate: "",
     description: "",
     notes: "",
   })
@@ -315,27 +316,18 @@ export default function NewFormPage() {
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Brief description of the request (optional)"
-                />
-              </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes</Label>
-                <Textarea
-                  id="notes"
-                  value={formData.notes}
-                  onChange={(e) => handleInputChange("notes", e.target.value)}
-                  placeholder="Any additional notes or special requirements"
-                  rows={3}
+                <Label htmlFor="submissionDate">Tanggal Pengajuan *</Label>
+                <Input
+                  id="submissionDate"
+                  type="date"
+                  value={formData.submissionDate}
+                  onChange={(e) => handleInputChange("submissionDate", e.target.value)}
+                  required
                 />
               </div>
+              
             </CardContent>
           </Card>
 
