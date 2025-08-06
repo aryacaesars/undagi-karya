@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,7 +18,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,59 +26,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Plus, MoreHorizontal, Eye, Edit, Package, Truck, Upload } from "lucide-react"
+import { Search, Plus, MoreHorizontal, Eye, Edit, Package, Upload, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
-
-const supplyItemsData = [
-  {
-    id: 1,
-    name: "Balok Baja I-Beam 20ft",
-    description: "Balok baja I-beam tugas berat untuk dukungan struktural",
-    specifications: "Panjang 20ft, Baja Grade A36",
-  },
-  {
-    id: 2,
-    name: "Campuran Beton (Kekuatan Tinggi)",
-    description: "Campuran beton kekuatan tinggi untuk pondasi",
-    specifications: "4000 PSI, Semen Portland",
-  },
-  {
-    id: 3,
-    name: "Kabel Listrik 12 AWG",
-    description: "Kabel listrik tembaga 12 AWG",
-    specifications: "THHN/THWN-2, rated 600V",
-  },
-  {
-    id: 4,
-    name: "Lembaran Plywood 4x8",
-    description: "Lembaran plywood 3/4 inci untuk konstruksi",
-    specifications: "4x8 kaki, Grade A/B, kualitas eksterior",
-  },
-  {
-    id: 5,
-    name: "Pipa PVC 4 inci",
-    description: "Pipa PVC 4 inci untuk drainase",
-    specifications: "Schedule 40, PVC putih",
-  },
-  {
-    id: 6,
-    name: "Batt Insulasi R-19",
-    description: "Batt insulasi fiberglass",
-    specifications: "R-19, tebal 6.25 inci, kraft faced",
-  },
-]
+import { useSupplyItems } from "@/hooks/use-supply-items"
+import { useDebounce } from "@/hooks/use-debounce"
 
 export default function SupplyItemsPage() {
   const [searchTerm, setSearchTerm] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
-  const filteredItems = supplyItemsData.filter((item) => {
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.specifications.toLowerCase().includes(searchTerm.toLowerCase())
+  // Debounce search term
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
-    return matchesSearch
+  // Fetch data with current filters
+  const { supplyItems, loading, error, pagination, refetch } = useSupplyItems({
+    search: debouncedSearchTerm || undefined,
+    page: currentPage,
+    limit: itemsPerPage
   })
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value)
+    setCurrentPage(1) // Reset to first page when searching
+  }
 
   return (
     <SidebarInset>
@@ -128,7 +104,9 @@ export default function SupplyItemsPage() {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{supplyItemsData.length}</div>
+              <div className="text-2xl font-bold">
+                {loading ? <Skeleton className="h-8 w-16" /> : pagination.totalItems}
+              </div>
               <p className="text-xs text-muted-foreground">Dalam katalog</p>
             </CardContent>
           </Card>
@@ -146,11 +124,20 @@ export default function SupplyItemsPage() {
                 <Input
                   placeholder="Cari item..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-8"
                 />
               </div>
             </div>
+
+            {error && (
+              <Alert className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  {error}
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="rounded-md border">
               <Table>
@@ -162,49 +149,151 @@ export default function SupplyItemsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredItems.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{item.name}</div>
-                          <div className="text-sm text-muted-foreground truncate max-w-[200px]">
-                            {item.description}
+                  {loading ? (
+                    // Loading skeleton
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <div>
+                            <Skeleton className="h-4 w-48 mb-2" />
+                            <Skeleton className="h-3 w-32" />
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-64" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Skeleton className="h-8 w-8 ml-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : supplyItems.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center py-8">
+                        <div className="flex flex-col items-center gap-2">
+                          <Package className="h-8 w-8 text-muted-foreground" />
+                          <p className="text-muted-foreground">
+                            {searchTerm 
+                              ? "Tidak ada item yang sesuai dengan pencarian"
+                              : "Belum ada item persediaan"
+                            }
+                          </p>
+                          {!searchTerm && (
+                            <Button asChild size="sm">
+                              <Link href="/supply-items/new">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Tambah Item Pertama
+                              </Link>
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm truncate max-w-[300px]">{item.specifications}</div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Buka menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/supply-items/${item.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                Lihat Detail
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Edit Item
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Buat Permintaan</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    supplyItems.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{item.name}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm truncate max-w-[300px]">
+                            {item.specifications || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Buka menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                              <DropdownMenuItem asChild>
+                                <Link href={`/supply-items/${item.id}`}>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Lihat Detail
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem asChild>
+                                <Link href={`/supply-items/${item.id}/edit`}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit Item
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem asChild>
+                                <Link href="/supply-requests/new">
+                                  Buat Permintaan
+                                </Link>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>
+
+            {/* Pagination */}
+            {!loading && supplyItems.length > 0 && (
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-muted-foreground">
+                  Menampilkan {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, pagination.totalItems)} dari {pagination.totalItems} item
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, index) => {
+                      let pageNumber;
+                      if (pagination.totalPages <= 5) {
+                        pageNumber = index + 1;
+                      } else if (currentPage <= 3) {
+                        pageNumber = index + 1;
+                      } else if (currentPage >= pagination.totalPages - 2) {
+                        pageNumber = pagination.totalPages - 4 + index;
+                      } else {
+                        pageNumber = currentPage - 2 + index;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNumber}
+                          variant={currentPage === pageNumber ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(pageNumber)}
+                          className="w-8 h-8 p-0"
+                        >
+                          {pageNumber}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= pagination.totalPages}
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

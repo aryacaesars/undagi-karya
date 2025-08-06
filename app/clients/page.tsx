@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -25,70 +25,80 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Building2, Calendar } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Building2, Calendar, Loader2 } from "lucide-react"
 import Link from "next/link"
-
-const clientsData = [
-  {
-    id: 1,
-    name: "MegaBuild Corporation",
-    phone: "+1 (555) 123-4567",
-    joinDate: "2023-01-15",
-    projectsCount: 12,
-    lastProject: "Downtown Mall Phase 2",
-  },
-  {
-    id: 2,
-    name: "Urban Developers CV",
-    phone: "+1 (555) 234-5678",
-    joinDate: "2023-03-22",
-    projectsCount: 8,
-    lastProject: "Residential Complex A",
-  },
-  {
-    id: 3,
-    name: "City Infrastructure Ltd",
-    phone: "+1 (555) 345-6789",
-    joinDate: "2022-11-08",
-    projectsCount: 15,
-    lastProject: "Highway Bridge Renovation",
-  },
-  {
-    id: 4,
-    name: "Green Construction",
-    phone: "+1 (555) 456-7890",
-    joinDate: "2023-05-10",
-    projectsCount: 6,
-    lastProject: "Eco-Friendly Office Building",
-  },
-  {
-    id: 5,
-    name: "John Smith",
-    phone: "+1 (555) 567-8901",
-    joinDate: "2023-07-18",
-    projectsCount: 2,
-    lastProject: "Home Renovation",
-  },
-  {
-    id: 6,
-    name: "Premier Builders Inc",
-    phone: "+1 (555) 678-9012",
-    joinDate: "2023-02-28",
-    projectsCount: 9,
-    lastProject: "Shopping Center Expansion",
-  },
-]
+import { useClients } from "@/hooks/use-clients"
+import { toast } from "sonner"
 
 export default function ClientsPage() {
   const [searchTerm, setSearchTerm] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [clientToDelete, setClientToDelete] = useState<string | null>(null)
+  
+  const {
+    clients,
+    loading,
+    error,
+    pagination,
+    fetchClients,
+    deleteClient,
+    clearError
+  } = useClients()
 
-  const filteredClients = clientsData.filter((client) => {
-    const matchesSearch =
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.phone.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch clients on component mount and when search/page changes
+  useEffect(() => {
+    fetchClients({
+      search: searchTerm || undefined,
+      page: currentPage,
+      limit: 10
+    })
+  }, [fetchClients, searchTerm, currentPage])
 
-    return matchesSearch
-  })
+  // Handle search with debouncing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1) // Reset to first page when searching
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  // Handle delete client
+  const handleDeleteClient = async () => {
+    if (!clientToDelete) return
+
+    try {
+      const result = await deleteClient(clientToDelete)
+      if (result.success) {
+        toast.success("Client berhasil dihapus")
+        setDeleteDialogOpen(false)
+        setClientToDelete(null)
+      } else {
+        toast.error(result.error || "Gagal menghapus client")
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan saat menghapus client")
+    }
+  }
+
+  // Show error toast when error occurs
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
+      clearError()
+    }
+  }, [error, clearError])
 
   return (
     <SidebarInset>
@@ -131,7 +141,13 @@ export default function ClientsPage() {
               <Building2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{clientsData.length}</div>
+              <div className="text-2xl font-bold">
+                {loading ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  pagination.totalItems
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Klien terdaftar
               </p>
@@ -139,14 +155,18 @@ export default function ClientsPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Proyek</CardTitle>
+              <CardTitle className="text-sm font-medium">Halaman</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {clientsData.reduce((sum, client) => sum + client.projectsCount, 0)}
+                {loading ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  `${pagination.currentPage} / ${pagination.totalPages}`
+                )}
               </div>
-              <p className="text-xs text-muted-foreground">Semua proyek klien</p>
+              <p className="text-xs text-muted-foreground">Halaman saat ini</p>
             </CardContent>
           </Card>
         </div>
@@ -167,6 +187,12 @@ export default function ClientsPage() {
                   className="pl-8"
                 />
               </div>
+              {loading && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Memuat...
+                </div>
+              )}
             </div>
 
             <div className="rounded-md border">
@@ -175,34 +201,63 @@ export default function ClientsPage() {
                   <TableRow>
                     <TableHead>Klien</TableHead>
                     <TableHead>Kontak</TableHead>
-                    <TableHead>Proyek</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Tanggal Bergabung</TableHead>
                     <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredClients.length === 0 ? (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">Tidak ada klien yang ditemukan sesuai kriteria Anda.</p>
-                    </div>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <span>Memuat data klien...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : clients.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <p className="text-muted-foreground">
+                          {searchTerm 
+                            ? "Tidak ada klien yang ditemukan sesuai kriteria pencarian." 
+                            : "Belum ada klien yang terdaftar."
+                          }
+                        </p>
+                      </TableCell>
+                    </TableRow>
                   ) : (
-                    filteredClients.map((client) => (
+                    clients.map((client) => (
                       <TableRow key={client.id}>
                         <TableCell>
                           <div>
                             <div className="font-medium">{client.name}</div>
-                            <div className="text-sm text-muted-foreground">Terakhir: {client.lastProject}</div>
+                            <div className="text-sm text-muted-foreground">
+                              ID: {client.id.slice(0, 8)}...
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="text-sm font-medium">{client.phone}</div>
+                            <div className="text-sm font-medium">
+                              {client.phone || "Tidak ada"}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {client.address || "Alamat tidak tersedia"}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{client.projectsCount} proyek</Badge>
+                          <Badge variant="outline">Aktif</Badge>
                         </TableCell>
-                        <TableCell>{new Date(client.joinDate).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {new Date(client.createdAt).toLocaleDateString('id-ID', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -219,12 +274,20 @@ export default function ClientsPage() {
                                   Lihat Detail
                                 </Link>
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Klien
+                              <DropdownMenuItem asChild>
+                                <Link href={`/clients/${client.id}/edit`}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit Klien
+                                </Link>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem 
+                                className="text-red-600"
+                                onClick={() => {
+                                  setClientToDelete(client.id)
+                                  setDeleteDialogOpen(true)
+                                }}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Hapus Klien
                               </DropdownMenuItem>
@@ -237,8 +300,61 @@ export default function ClientsPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-muted-foreground">
+                  Menampilkan {clients.length} dari {pagination.totalItems} klien
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1 || loading}
+                  >
+                    Sebelumnya
+                  </Button>
+                  <span className="text-sm">
+                    Halaman {pagination.currentPage} dari {pagination.totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.totalPages))}
+                    disabled={currentPage === pagination.totalPages || loading}
+                  >
+                    Selanjutnya
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Konfirmasi Penghapusan</AlertDialogTitle>
+              <AlertDialogDescription>
+                Apakah Anda yakin ingin menghapus klien ini? Tindakan ini tidak dapat dibatalkan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setClientToDelete(null)}>
+                Batal
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteClient}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </SidebarInset>
   )

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,24 +28,15 @@ import {
   Plus,
   CheckCircle,
   FileText,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { useProjectDetail } from "../../../hooks/use-project-detail"
+import { Project } from "../../../types/project"
 
-// Mock data
-const projectData = {
-  id: 1,
-  name: "Mall Downtown Fase 2",
-  client: "MegaBuild Corporation",
-  officer: "John Smith",
-  progress: 75,
-  startDate: "2023-03-15",
-  endDate: "2024-01-30",
-  description: "Perluasan mall yang sudah ada dengan ruang ritel baru, food court, dan fasilitas parkir.",
-  type: "renovasi",
-  location: "Distrik Bisnis Downtown, New York",
-}
-
+// Mock data untuk demo (akan diganti dengan data real)
 const projectStages = [
   {
     id: 1,
@@ -116,6 +109,10 @@ const projectDocuments = [
 export default function ProjectDetailPage() {
   const params = useParams()
   const [activeTab, setActiveTab] = useState("overview")
+  const projectId = params.id as string
+
+  // Ambil data project dari API
+  const { project, loading, error, refetch } = useProjectDetail(projectId)
 
   // Status badge function removed
 
@@ -127,6 +124,163 @@ export default function ProjectDetailPage() {
       perlengkapan: "bg-purple-100 text-purple-800",
     }
     return <Badge className={colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{type}</Badge>
+  }
+
+  const calculateProgress = () => {
+    if (!project?.forms || project.forms.length === 0) return 0
+    // Hitung progress berdasarkan jumlah forms atau logika lain yang sesuai
+    return Math.min(project.forms.length * 20, 100) // Contoh kalkulasi
+  }
+
+  const calculateDaysRemaining = () => {
+    if (!project?.endDate) return 0
+    const endDate = new Date(project.endDate)
+    const today = new Date()
+    const diffTime = endDate.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return Math.max(diffDays, 0)
+  }
+
+  if (loading) {
+    return (
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/projects">Proyek</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Memuat...</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-12 w-12 rounded-lg" />
+              <div>
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-6 w-20" />
+              </div>
+            </div>
+            <Skeleton className="h-10 w-32" />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}>
+                <CardHeader className="pb-2">
+                  <Skeleton className="h-4 w-20" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-16 mb-2" />
+                  <Skeleton className="h-2 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-32 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+      </SidebarInset>
+    )
+  }
+
+  if (error) {
+    return (
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/projects">Proyek</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Error</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="flex items-center justify-between">
+              <span>{error}</span>
+              <Button variant="outline" size="sm" onClick={refetch}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Coba Lagi
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      </SidebarInset>
+    )
+  }
+
+  if (!project) {
+    return (
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/projects">Proyek</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Tidak Ditemukan</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Proyek tidak ditemukan atau tidak dapat diakses.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </SidebarInset>
+    )
   }
 
   return (
@@ -146,7 +300,7 @@ export default function ProjectDetailPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>{projectData.name}</BreadcrumbPage>
+                <BreadcrumbPage>{project.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -160,16 +314,18 @@ export default function ProjectDetailPage() {
               <Building2 className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">{projectData.name}</h1>
+              <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
               <div className="flex items-center gap-2">
-                {getTypeBadge(projectData.type)}
+                {project.type && getTypeBadge(project.type)}
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Proyek
+            <Button variant="outline" asChild>
+              <Link href={`/projects/${project.id}/edit`}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Proyek
+              </Link>
             </Button>
           </div>
         </div>
@@ -181,8 +337,8 @@ export default function ProjectDetailPage() {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{projectData.progress}%</div>
-              <Progress value={projectData.progress} className="mt-2" />
+              <div className="text-2xl font-bold">{calculateProgress()}%</div>
+              <Progress value={calculateProgress()} className="mt-2" />
             </CardContent>
           </Card>
           <Card>
@@ -191,9 +347,7 @@ export default function ProjectDetailPage() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {Math.ceil((new Date(projectData.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
-              </div>
+              <div className="text-2xl font-bold">{calculateDaysRemaining()}</div>
               <p className="text-xs text-muted-foreground">hari tersisa</p>
             </CardContent>
           </Card>
@@ -203,8 +357,10 @@ export default function ProjectDetailPage() {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{projectData.officer.split(" ")[0]}</div>
-              <p className="text-xs text-muted-foreground">{projectData.officer}</p>
+              <div className="text-2xl font-bold">
+                {project.officer ? project.officer.split(" ")[0] : "N/A"}
+              </div>
+              <p className="text-xs text-muted-foreground">{project.officer || "Belum ditentukan"}</p>
             </CardContent>
           </Card>
         </div>
@@ -229,14 +385,14 @@ export default function ProjectDetailPage() {
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Klien</p>
-                      <p className="text-sm text-muted-foreground">{projectData.client}</p>
+                      <p className="text-sm text-muted-foreground">{project.client || "Belum ditentukan"}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Petugas Proyek</p>
-                      <p className="text-sm text-muted-foreground">{projectData.officer}</p>
+                      <p className="text-sm text-muted-foreground">{project.officer || "Belum ditentukan"}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -244,8 +400,8 @@ export default function ProjectDetailPage() {
                     <div>
                       <p className="text-sm font-medium">Jadwal</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(projectData.startDate).toLocaleDateString()} -{" "}
-                        {new Date(projectData.endDate).toLocaleDateString()}
+                        {project.startDate ? new Date(project.startDate).toLocaleDateString() : "Belum ditentukan"} -{" "}
+                        {project.endDate ? new Date(project.endDate).toLocaleDateString() : "Belum ditentukan"}
                       </p>
                     </div>
                   </div>
@@ -253,21 +409,23 @@ export default function ProjectDetailPage() {
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Lokasi</p>
-                      <p className="text-sm text-muted-foreground">{projectData.location}</p>
+                      <p className="text-sm text-muted-foreground">{project.location || "Belum ditentukan"}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Tipe</p>
-                      <p className="text-sm text-muted-foreground">{projectData.type}</p>
+                      <p className="text-sm text-muted-foreground">{project.type || "Belum ditentukan"}</p>
                     </div>
                   </div>
                 </div>
                 <Separator />
                 <div>
                   <p className="text-sm font-medium mb-2">Deskripsi</p>
-                  <p className="text-sm text-muted-foreground">{projectData.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {project.description || "Tidak ada deskripsi yang tersedia."}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -280,26 +438,33 @@ export default function ProjectDetailPage() {
                 <CardDescription>Lacak progres di berbagai fase proyek</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {projectStages.map((stage) => (
-                    <div key={stage.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium">{stage.name}</h4>
-                      </div>
-                      <div className="grid gap-2 md:grid-cols-2 text-sm text-muted-foreground mb-3">
-                        <div>
-                          <span className="font-medium">Jadwal:</span>{" "}
-                          {new Date(stage.startDate).toLocaleDateString()} -{" "}
-                          {new Date(stage.endDate).toLocaleDateString()}
+                {project.forms && project.forms.length > 0 ? (
+                  <div className="space-y-4">
+                    {project.forms.map((form, index) => (
+                      <div key={form.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium">Form #{form.id}</h4>
                         </div>
-                        <div>
-                          <span className="font-medium">Progres:</span> {stage.progress}%
+                        <div className="grid gap-2 md:grid-cols-2 text-sm text-muted-foreground mb-3">
+                          <div>
+                            <span className="font-medium">Dibuat:</span>{" "}
+                            {new Date(form.createdAt).toLocaleDateString()}
+                          </div>
+                          <div>
+                            <span className="font-medium">Status:</span> Aktif
+                          </div>
                         </div>
+                        <Progress value={100} className="h-2" />
                       </div>
-                      <Progress value={stage.progress} className="h-2" />
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Belum ada tahap proyek yang dibuat.</p>
+                    <p className="text-sm">Form proyek akan tampil di sini ketika sudah dibuat.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

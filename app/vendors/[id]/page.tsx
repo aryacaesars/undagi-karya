@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -14,7 +13,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   Building2,
   Mail,
@@ -22,69 +20,63 @@ import {
   MapPin,
   Calendar,
   DollarSign,
-  ShoppingBag,
   Edit,
   Plus,
-  Eye,
-  Clock,
   Truck,
   Package,
+  Loader2,
+  ShoppingBag,
 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-
-// Mock data - in real app this would come from API
-const vendorData = {
-  id: 1,
-  name: "Steel & Materials Co.",
-  phone: "+1 (555) 111-2222",
-  address: "123 Industrial Ave, New York, NY",
-  totalOrders: 45,
-  paymentTerms: "Net 30",
-  joinDate: "2022-03-15",
-  lastOrder: "2023-08-10",
-  contactPerson: "James Wilson",
-  description: "Pemasok utama material konstruksi berkualitas tinggi untuk proyek komersial dan perumahan."
-}
-
-const orderHistory = [
-  {
-    id: 1,
-    product: "Balok Baja (I-Beam 8\")",
-    quantity: 24,
-    orderDate: "2023-07-15",
-    deliveryDate: "2023-07-25",
-    project: "Mall Downtown Fase 2"
-  },
-  {
-    id: 2,
-    product: "Campuran Beton (Premium)",
-    quantity: 150,
-    orderDate: "2023-06-02",
-    deliveryDate: "2023-06-10",
-    project: "Gedung Kantor Korporat"
-  },
-  {
-    id: 3,
-    product: "Besi Beton (#5 panjang 60')",
-    quantity: 80,
-    orderDate: "2023-08-01",
-    deliveryDate: "2023-08-12",
-    project: "Ekspansi Gudang"
-  },
-  {
-    id: 4,
-    product: "Bekisting Beton",
-    quantity: 35,
-    orderDate: "2023-05-20",
-    deliveryDate: "2023-06-01",
-    project: "Struktur Parkir"
-  },
-]
+import { useVendorDetail } from "@/hooks/use-vendor-detail"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function VendorDetailPage() {
   const params = useParams()
-  const vendorId = params.id
+  const vendorId = params.id as string
+  const { vendor, loading, error } = useVendorDetail(vendorId)
+
+  if (loading) {
+    return (
+      <SidebarInset>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Memuat data vendor...</span>
+          </div>
+        </div>
+      </SidebarInset>
+    )
+  }
+
+  if (error) {
+    return (
+      <SidebarInset>
+        <div className="flex flex-1 items-center justify-center p-4">
+          <Alert className="max-w-md">
+            <AlertDescription>
+              {error}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </SidebarInset>
+    )
+  }
+
+  if (!vendor) {
+    return (
+      <SidebarInset>
+        <div className="flex flex-1 items-center justify-center p-4">
+          <Alert className="max-w-md">
+            <AlertDescription>
+              Vendor tidak ditemukan
+            </AlertDescription>
+          </Alert>
+        </div>
+      </SidebarInset>
+    )
+  }
 
 
   
@@ -109,7 +101,7 @@ export default function VendorDetailPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>{vendorData.name}</BreadcrumbPage>
+                <BreadcrumbPage>{vendor.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -123,13 +115,15 @@ export default function VendorDetailPage() {
               <Truck className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">{vendorData.name}</h1>
+              <h1 className="text-2xl font-bold tracking-tight">{vendor.name}</h1>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Vendor
+            <Button variant="outline" asChild>
+              <Link href={`/vendors/${vendor.id}/edit`}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Vendor
+              </Link>
             </Button>
             <Button asChild>
               <Link href="/supply-requests/new">
@@ -143,21 +137,23 @@ export default function VendorDetailPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Pesanan</CardTitle>
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Tanggal Bergabung</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{vendorData.totalOrders}</div>
-              <p className="text-xs text-muted-foreground">Semua pembelian</p>
+              <div className="text-2xl font-bold">
+                {new Date(vendor.createdAt).toLocaleDateString('id-ID')}
+              </div>
+              <p className="text-xs text-muted-foreground">Tanggal registrasi</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Syarat Pembayaran</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{vendorData.paymentTerms}</div>
+              <div className="text-2xl font-bold">{vendor.paymentTerms || 'Belum diatur'}</div>
               <p className="text-xs text-muted-foreground">Syarat standar</p>
             </CardContent>
           </Card>
@@ -177,14 +173,14 @@ export default function VendorDetailPage() {
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Telepon</p>
-                      <p className="text-sm text-muted-foreground">{vendorData.phone}</p>
+                      <p className="text-sm text-muted-foreground">{vendor.phone || 'Tidak ada'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Alamat</p>
-                      <p className="text-sm text-muted-foreground">{vendorData.address}</p>
+                      <p className="text-sm text-muted-foreground">{vendor.address || 'Tidak ada'}</p>
                     </div>
                   </div>
                 </div>
@@ -193,7 +189,7 @@ export default function VendorDetailPage() {
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Kontak Person</p>
-                      <p className="text-sm text-muted-foreground">{vendorData.contactPerson}</p>
+                      <p className="text-sm text-muted-foreground">{vendor.contactPerson || 'Tidak ada'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -201,16 +197,16 @@ export default function VendorDetailPage() {
                     <div>
                       <p className="text-sm font-medium">Tanggal Bergabung</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(vendorData.joinDate).toLocaleDateString()}
+                        {new Date(vendor.createdAt).toLocaleDateString('id-ID')}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Pesanan Terakhir</p>
+                      <p className="text-sm font-medium">Terakhir Diperbarui</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(vendorData.lastOrder).toLocaleDateString()}
+                        {new Date(vendor.updatedAt).toLocaleDateString('id-ID')}
                       </p>
                     </div>
                   </div>
@@ -220,7 +216,7 @@ export default function VendorDetailPage() {
 
               <div>
                 <p className="text-sm font-medium mb-2">Deskripsi</p>
-                <p className="text-sm text-muted-foreground">{vendorData.description}</p>
+                <p className="text-sm text-muted-foreground">{vendor.description || 'Tidak ada deskripsi'}</p>
               </div>
             </CardContent>
           </Card>
@@ -241,9 +237,11 @@ export default function VendorDetailPage() {
                 <Mail className="mr-2 h-4 w-4" />
                 Kirim Pertanyaan
               </Button>
-              <Button variant="outline" className="w-full justify-start bg-transparent">
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Info Vendor
+              <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
+                <Link href={`/vendors/${vendor.id}/edit`}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Info Vendor
+                </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent">
                 <ShoppingBag className="mr-2 h-4 w-4" />
@@ -259,46 +257,18 @@ export default function VendorDetailPage() {
             <CardDescription>Pesanan pembelian dari vendor ini</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Produk</TableHead>
-                    <TableHead>Kuantitas</TableHead>
-                    <TableHead>Proyek</TableHead>
-                    <TableHead>Tanggal Pesanan</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orderHistory.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">{order.product}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{order.quantity} unit</Badge>
-                      </TableCell>
-                      <TableCell>{order.project}</TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div>{new Date(order.orderDate).toLocaleDateString()}</div>
-                          {order.deliveryDate && (
-                            <div className="text-muted-foreground">
-                              Pengiriman: {new Date(order.deliveryDate).toLocaleDateString()}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/supply-requests/${order.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Package className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Fitur Segera Hadir</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Riwayat pesanan dan integrasi dengan sistem supply request sedang dalam pengembangan.
+              </p>
+              <Button asChild>
+                <Link href="/supply-requests/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Buat Pesanan Baru
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

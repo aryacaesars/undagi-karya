@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,6 +26,7 @@ import { useRouter } from "next/navigation"
 
 export default function NewClientPage() {
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -37,14 +39,49 @@ export default function NewClientPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the data to your API
-    console.log("Creating client:", formData)
-    // Simulate API call
-    setTimeout(() => {
+    
+    // Validasi form
+    if (!formData.name.trim()) {
+      toast.error("Nama klien harus diisi")
+      return
+    }
+
+    if (!formData.phone.trim()) {
+      toast.error("Nomor telepon harus diisi")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/clients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          address: formData.address.trim() || null,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Gagal membuat klien')
+      }
+
+      toast.success("Klien berhasil dibuat!")
       router.push("/clients")
-    }, 1000)
+    } catch (error) {
+      console.error('Error creating client:', error)
+      toast.error(error instanceof Error ? error.message : "Gagal membuat klien")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -131,39 +168,10 @@ export default function NewClientPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Informasi Kontak</CardTitle>
-              <CardDescription>Detail kontak utama</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="contactPerson">Kontak Person</Label>
-                <Input
-                  id="contactPerson"
-                  value={formData.contactPerson}
-                  onChange={(e) => handleInputChange("contactPerson", e.target.value)}
-                  placeholder="Nama kontak utama"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Deskripsi</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Deskripsi singkat tentang klien dan usahanya"
-                  rows={4}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
           <div className="flex items-center gap-4">
-            <Button type="submit" className="flex-1 max-w-xs">
+            <Button type="submit" className="flex-1 max-w-xs" disabled={isLoading}>
               <Save className="mr-2 h-4 w-4" />
-              Buat Klien
+              {isLoading ? "Membuat..." : "Buat Klien"}
             </Button>
             <Button type="button" variant="outline" asChild>
               <Link href="/clients">Batal</Link>

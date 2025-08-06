@@ -17,7 +17,7 @@ import {
 import {
   Users,
   FolderOpen,
-  DollarSign,
+  FileText,
   ClipboardList,
   TrendingUp,
   TrendingDown,
@@ -27,12 +27,14 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Package,
+  UserCheck,
+  Truck,
 } from "lucide-react"
 import Link from "next/link"
 import {
   Bar,
   BarChart,
-  Line,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -43,101 +45,189 @@ import {
   Pie,
   Cell,
 } from "recharts"
+import { useEffect, useState } from "react"
 
 const statsData = [
   {
     title: "Total Klien",
-    value: "248",
-    change: "+12%",
+    value: "0",
+    change: "+0%",
     trend: "up",
     icon: Users,
-    description: "Klien aktif",
+    description: "Klien terdaftar",
   },
   {
     title: "Proyek Aktif",
-    value: "42",
-    change: "+8%",
+    value: "0",
+    change: "+0%",
     trend: "up",
     icon: FolderOpen,
     description: "Sedang berjalan",
   },
   {
-    title: "Pendapatan Bulanan",
-    value: "$2.4M",
-    change: "+15%",
+    title: "Total Formulir",
+    value: "0",
+    change: "+0%",
     trend: "up",
-    icon: DollarSign,
-    description: "Bulan ini",
+    icon: FileText,
+    description: "Formulir permintaan",
   },
   {
-    title: "Permintaan Persediaan",
-    value: "156",
-    change: "-3%",
-    trend: "down",
-    icon: ClipboardList,
-    description: "Menunggu persetujuan",
+    title: "Item Persediaan",
+    value: "0",
+    change: "+0%",
+    trend: "up",
+    icon: Package,
+    description: "Item terdaftar",
   },
 ]
 
 const revenueData = [
-  { month: "Jan", revenue: 1800000, projects: 35 },
-  { month: "Feb", revenue: 2100000, projects: 38 },
-  { month: "Mar", revenue: 1950000, projects: 42 },
-  { month: "Apr", revenue: 2300000, projects: 45 },
-  { month: "May", revenue: 2150000, projects: 41 },
-  { month: "Jun", revenue: 2400000, projects: 42 },
+  { month: "Jan", forms: 0, projects: 0 },
+  { month: "Feb", forms: 0, projects: 0 },
+  { month: "Mar", forms: 0, projects: 0 },
+  { month: "Apr", forms: 0, projects: 0 },
+  { month: "May", forms: 0, projects: 0 },
+  { month: "Jun", forms: 0, projects: 0 },
 ]
 
 const projectStatusData = [
-  { name: "Berjalan", value: 42, color: "#3b82f6" },
-  { name: "Selesai", value: 128, color: "#10b981" },
-  { name: "Ditunda", value: 8, color: "#f59e0b" },
-  { name: "Perencanaan", value: 15, color: "#8b5cf6" },
+  { name: "Perencanaan", value: 0, color: "#8b5cf6" },
+  { name: "Berjalan", value: 0, color: "#3b82f6" },
+  { name: "Selesai", value: 0, color: "#10b981" },
+  { name: "Ditunda", value: 0, color: "#f59e0b" },
+]
+
+const formTypeData = [
+  { name: "Permintaan Material", value: 0, color: "#3b82f6" },
+  { name: "Permintaan Alat", value: 0, color: "#10b981" },
+  { name: "Permintaan SDM", value: 0, color: "#f59e0b" },
+  { name: "Lainnya", value: 0, color: "#8b5cf6" },
 ]
 
 const recentActivities = [
   {
     id: 1,
     type: "client",
-    title: "Klien baru terdaftar",
-    description: "ABC Construction Ltd bergabung dengan platform",
-    time: "2 jam yang lalu",
+    title: "Selamat datang di sistem",
+    description: "Mulai dengan menambahkan klien pertama Anda",
+    time: "Baru saja",
     icon: Users,
   },
   {
     id: 2,
     type: "project",
-    title: "Milestone proyek selesai",
-    description: "Downtown Mall - Fase 2 pondasi selesai",
-    time: "4 jam yang lalu",
-    icon: CheckCircle,
+    title: "Buat proyek baru",
+    description: "Tambahkan proyek konstruksi pertama",
+    time: "Baru saja",
+    icon: FolderOpen,
   },
   {
     id: 3,
     type: "supply",
-    title: "Permintaan persediaan disetujui",
-    description: "Pesanan balok baja untuk Kompleks Hunian",
-    time: "6 jam yang lalu",
-    icon: ClipboardList,
+    title: "Kelola persediaan",
+    description: "Tambahkan item persediaan untuk proyek",
+    time: "Baru saja",
+    icon: Package,
   },
   {
     id: 4,
-    type: "project",
-    title: "Status proyek diperbarui",
-    description: "Renovasi Gedung Kantor dipindah ke penyelesaian",
-    time: "1 hari yang lalu",
-    icon: FolderOpen,
+    type: "form",
+    title: "Buat formulir permintaan",
+    description: "Buat formulir permintaan material atau alat",
+    time: "Baru saja",
+    icon: FileText,
   },
 ]
 
-const topClients = [
-  { name: "MegaBuild Corp", projects: 12, value: "$850K", type: "PERUSAHAAN" },
-  { name: "Urban Developers", projects: 8, value: "$620K", type: "CV" },
-  { name: "City Infrastructure", projects: 15, value: "$1.2M", type: "PERUSAHAAN" },
-  { name: "Green Construction", projects: 6, value: "$480K", type: "CV" },
-]
-
 export default function Dashboard() {
+  const [dashboardData, setDashboardData] = useState({
+    clients: 0,
+    projects: 0,
+    forms: 0,
+    supplyItems: 0,
+    officers: 0,
+    vendors: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch all data in parallel
+        const [clientsRes, projectsRes, formsRes, supplyItemsRes, officersRes, vendorsRes] = await Promise.all([
+          fetch('/api/clients'),
+          fetch('/api/projects'),
+          fetch('/api/forms'),
+          fetch('/api/supply-items'),
+          fetch('/api/officers'),
+          fetch('/api/vendors'),
+        ])
+
+        const [clients, projects, forms, supplyItems, officers, vendors] = await Promise.all([
+          clientsRes.json(),
+          projectsRes.json(),
+          formsRes.json(),
+          supplyItemsRes.json(),
+          officersRes.json(),
+          vendorsRes.json(),
+        ])
+
+        setDashboardData({
+          clients: clients.pagination?.totalItems || clients.data?.length || 0,
+          projects: projects.pagination?.totalItems || projects.data?.length || 0,
+          forms: forms.pagination?.totalItems || forms.data?.length || 0,
+          supplyItems: supplyItems.pagination?.totalItems || supplyItems.data?.length || 0,
+          officers: officers.pagination?.totalItems || officers.data?.length || 0,
+          vendors: vendors.pagination?.totalItems || vendors.data?.length || 0,
+        })
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
+
+  // Update stats data with real values
+  const currentStatsData = [
+    {
+      title: "Total Klien",
+      value: dashboardData.clients.toString(),
+      change: "+0%",
+      trend: "up" as const,
+      icon: Users,
+      description: "Klien terdaftar",
+    },
+    {
+      title: "Proyek Aktif",
+      value: dashboardData.projects.toString(),
+      change: "+0%",
+      trend: "up" as const,
+      icon: FolderOpen,
+      description: "Proyek terdaftar",
+    },
+    {
+      title: "Total Formulir",
+      value: dashboardData.forms.toString(),
+      change: "+0%",
+      trend: "up" as const,
+      icon: FileText,
+      description: "Formulir permintaan",
+    },
+    {
+      title: "Item Persediaan",
+      value: dashboardData.supplyItems.toString(),
+      change: "+0%",
+      trend: "up" as const,
+      icon: Package,
+      description: "Item terdaftar",
+    },
+  ]
   return (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -159,14 +249,14 @@ export default function Dashboard() {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-          {statsData.map((stat) => (
+          {currentStatsData.map((stat) => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
                 <stat.icon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-2xl font-bold">{loading ? "..." : stat.value}</div>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   {stat.trend === "up" ? (
                     <TrendingUp className="h-3 w-3 text-green-500" />
@@ -184,25 +274,24 @@ export default function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
-              <CardTitle>Ringkasan Pendapatan</CardTitle>
-              <CardDescription>Pendapatan bulanan dan jumlah proyek</CardDescription>
+              <CardTitle>Statistik Bulanan</CardTitle>
+              <CardDescription>Jumlah formulir dan proyek per bulan</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={revenueData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
+                  <YAxis />
                   <Tooltip
                     formatter={(value, name) => [
-                      name === "revenue" ? `$${(value as number).toLocaleString()}` : value,
-                      name === "revenue" ? "Pendapatan" : "Proyek",
+                      value,
+                      name === "forms" ? "Formulir" : "Proyek",
                     ]}
                   />
                   <Legend />
-                  <Bar yAxisId="left" dataKey="revenue" fill="#3b82f6" name="Pendapatan" />
-                  <Bar yAxisId="right" dataKey="projects" fill="#10b981" name="Proyek" />
+                  <Bar dataKey="forms" fill="#3b82f6" name="Formulir" />
+                  <Bar dataKey="projects" fill="#10b981" name="Proyek" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -210,23 +299,23 @@ export default function Dashboard() {
 
           <Card className="col-span-3">
             <CardHeader>
-              <CardTitle>Distribusi Status Proyek</CardTitle>
-              <CardDescription>Rincian status proyek saat ini</CardDescription>
+              <CardTitle>Distribusi Tipe Formulir</CardTitle>
+              <CardDescription>Jenis formulir permintaan</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
-                    data={projectStatusData}
+                    data={formTypeData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                    label={({ name, value }) => (value && value > 0) ? `${name} ${value}` : name}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {projectStatusData.map((entry, index) => (
+                    {formTypeData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -272,8 +361,8 @@ export default function Dashboard() {
           <Card className="col-span-3">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Klien Teratas</CardTitle>
-                <CardDescription>Klien dengan nilai tertinggi bulan ini</CardDescription>
+                <CardTitle>Ringkasan Sistem</CardTitle>
+                <CardDescription>Data yang tersedia di sistem</CardDescription>
               </div>
               <Button variant="outline" size="sm" asChild>
                 <Link href="/clients">
@@ -284,25 +373,44 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {topClients.map((client, index) => (
-                  <div key={client.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
-                        <Building2 className="h-4 w-4 text-gray-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{client.name}</p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {client.type}
-                          </Badge>
-                          <span className="text-xs text-gray-500">{client.projects} proyek</span>
-                        </div>
-                      </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                      <Users className="h-4 w-4 text-blue-600" />
                     </div>
-                    <div className="text-sm font-medium">{client.value}</div>
+                    <div>
+                      <p className="text-sm font-medium">Klien</p>
+                      <p className="text-xs text-gray-500">Total klien terdaftar</p>
+                    </div>
                   </div>
-                ))}
+                  <div className="text-sm font-medium">{loading ? "..." : dashboardData.clients}</div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                      <UserCheck className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Petugas</p>
+                      <p className="text-xs text-gray-500">Petugas proyek</p>
+                    </div>
+                  </div>
+                  <div className="text-sm font-medium">{loading ? "..." : dashboardData.officers}</div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
+                      <Truck className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Vendor</p>
+                      <p className="text-xs text-gray-500">Supplier terdaftar</p>
+                    </div>
+                  </div>
+                  <div className="text-sm font-medium">{loading ? "..." : dashboardData.vendors}</div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -327,9 +435,15 @@ export default function Dashboard() {
                 </Link>
               </Button>
               <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
-                <Link href="/supply-requests/new">
+                <Link href="/forms/new">
                   <Plus className="h-4 w-4 mr-2" />
-                  Permintaan Persediaan
+                  Formulir Permintaan
+                </Link>
+              </Button>
+              <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
+                <Link href="/supply-items">
+                  <Package className="h-4 w-4 mr-2" />
+                  Kelola Persediaan
                 </Link>
               </Button>
             </CardContent>
@@ -337,29 +451,29 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Progres Proyek</CardTitle>
+              <CardTitle className="text-base font-medium">Progres Sistem</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>Downtown Mall</span>
-                  <span>75%</span>
+                  <span>Setup Klien</span>
+                  <span>{dashboardData.clients > 0 ? "100%" : "0%"}</span>
                 </div>
-                <Progress value={75} className="h-2" />
+                <Progress value={dashboardData.clients > 0 ? 100 : 0} className="h-2" />
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>Kompleks Hunian</span>
-                  <span>45%</span>
+                  <span>Setup Proyek</span>
+                  <span>{dashboardData.projects > 0 ? "100%" : "0%"}</span>
                 </div>
-                <Progress value={45} className="h-2" />
+                <Progress value={dashboardData.projects > 0 ? 100 : 0} className="h-2" />
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>Gedung Kantor</span>
-                  <span>90%</span>
+                  <span>Data Persediaan</span>
+                  <span>{dashboardData.supplyItems > 0 ? "100%" : "0%"}</span>
                 </div>
-                <Progress value={90} className="h-2" />
+                <Progress value={dashboardData.supplyItems > 0 ? 100 : 0} className="h-2" />
               </div>
             </CardContent>
           </Card>
@@ -370,23 +484,24 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Proyek Aktif</span>
-                <Badge variant="default" className="bg-green-100 text-green-800">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  42 Berjalan
+                <span className="text-sm">Total Formulir</span>
+                <Badge variant="default" className="bg-blue-100 text-blue-800">
+                  <FileText className="h-3 w-3 mr-1" />
+                  {dashboardData.forms} Formulir
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Menunggu Persetujuan</span>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                  <Clock className="h-3 w-3 mr-1" />
-                  12 Menunggu
+                <span className="text-sm">Petugas Aktif</span>
+                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  <UserCheck className="h-3 w-3 mr-1" />
+                  {dashboardData.officers} Petugas
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Tugas Terlambat</span>
-                <Badge variant="destructive" className="bg-red-100 text-red-800">
-                  <AlertCircle className="h-3 w-3 mr-1" />3 Terlambat
+                <span className="text-sm">Vendor Terdaftar</span>
+                <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                  <Truck className="h-3 w-3 mr-1" />
+                  {dashboardData.vendors} Vendor
                 </Badge>
               </div>
             </CardContent>

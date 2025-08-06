@@ -28,51 +28,8 @@ import { PDFDownloader, PDFPreviewerWrapper } from "@/components/pdf-renderer"
 import { DownloadPDFButton } from "@/components/download-pdf-button"
 import ErrorBoundary from "@/components/error-boundary"
 
-const projectOfficersData = [
-  { id: 1, name: "John Smith", role: "Senior Project Manager" },
-  { id: 2, name: "Maria Rodriguez", role: "Construction Supervisor" },
-  { id: 3, name: "David Chen", role: "Site Engineer" },
-  { id: 4, name: "Sarah Johnson", role: "Project Coordinator" },
-  { id: 5, name: "Michael Lee", role: "Technical Lead" },
-]
 
-const supplyItemsData = [
-  {
-    id: 1,
-    name: "Steel I-Beam 20ft",
-    category: "Structural Steel",
-    unit: "piece",
-    specifications: "20ft length, Grade A36 steel",
-  },
-  {
-    id: 2,
-    name: "Concrete Mix (High Strength)",
-    category: "Concrete",
-    unit: "cubic yard",
-    specifications: "4000 PSI, Portland cement",
-  },
-  {
-    id: 3,
-    name: "Electrical Wire 12 AWG",
-    category: "Electrical",
-    unit: "foot",
-    specifications: "THHN/THWN-2, 600V rated",
-  },
-  {
-    id: 4,
-    name: "Plywood Sheet 4x8",
-    category: "Lumber",
-    unit: "sheet",
-    specifications: "4x8 feet, Grade A/B, exterior grade",
-  },
-  {
-    id: 5,
-    name: "PVC Pipe 4 inch",
-    category: "Plumbing",
-    unit: "foot",
-    specifications: "Schedule 40, white PVC",
-  },
-]
+
 
 export interface RequestItem {
   id: string
@@ -84,7 +41,50 @@ export interface RequestItem {
 }
 
 export default function NewFormPage() {
-  const router = useRouter()
+  const router = useRouter();
+  
+  // Helper function to ensure string values are never null/undefined
+  const ensureString = (value: any): string => {
+    return value?.toString() || "";
+  };
+  
+  // Helper function to ensure number values are valid
+  const ensureNumber = (value: any): number => {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  };
+  
+  // Data state for fetched options
+  const [projectsData, setProjectsData] = useState<any[]>([]);
+  const [projectOfficersData, setProjectOfficersData] = useState<any[]>([]);
+  const [supplyItemsData, setSupplyItemsData] = useState<any[]>([]);
+
+  // Fetch options from API on mount
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [projectsRes, officersRes, supplyItemsRes] = await Promise.all([
+          fetch('/api/projects'),
+          fetch('/api/officers'),
+          fetch('/api/supply-items'),
+        ]);
+        const [projects, officers, supplyItems] = await Promise.all([
+          projectsRes.json(),
+          officersRes.json(),
+          supplyItemsRes.json(),
+        ]);
+        setProjectsData(projects.data || []);
+        setProjectOfficersData(officers.data || []);
+        setSupplyItemsData(supplyItems.data || []);
+      } catch (err) {
+        setProjectsData([]);
+        setProjectOfficersData([]);
+        setSupplyItemsData([]);
+      }
+    };
+    fetchOptions();
+  }, []);
+
   const [formData, setFormData] = useState({
     project: "",
     type: "",
@@ -92,7 +92,7 @@ export default function NewFormPage() {
     submissionDate: "",
     description: "",
     notes: "",
-  })
+  });
 
   const [items, setItems] = useState<RequestItem[]>([
     {
@@ -114,20 +114,20 @@ export default function NewFormPage() {
       prev.map((item) => {
         if (item.id === id) {
           if (field === "itemName") {
-            // Find the selected supply item
-            const selectedItem = supplyItemsData.find((si) => si.name === value)
+            // Find the selected supply item by ID (value is the ID from select)
+            const selectedItem = supplyItemsData.find((si) => si.id === value)
             if (selectedItem) {
               return {
                 ...item,
-                itemName: selectedItem.name,
-                unit: selectedItem.unit,
-                specifications: selectedItem.specifications,
+                itemName: ensureString(value), // Store the ID for API submission
+                unit: ensureString(selectedItem.unit), // Ensure string, not null/undefined
+                specifications: ensureString(selectedItem.specifications), // Ensure string, not null/undefined
               }
             }
           }
           return {
             ...item,
-            [field]: field === "quantity" ? Number(value) : value,
+            [field]: field === "quantity" ? ensureNumber(value) : ensureString(value),
           }
         }
         return item
@@ -160,48 +160,110 @@ export default function NewFormPage() {
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
+    e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      console.log("Creating form:", { ...formData, items })
-      
-      // Save the current form data for PDF generation
-      formSubmittedData.current = {
-        formData: { ...formData },
-        items: [...items]
+
+      // Map project and officer to their IDs from fetched data
+      const selectedProject = projectsData.find((p) => p.id === formData.project || p.name === formData.project);
+      const selectedOfficer = projectOfficersData.find((o) => o.id === formData.projectOfficer || o.name === formData.projectOfficer);
+
+      // Map items to include supplyItemId from fetched data
+      const mappedItems = items.map((item) => {
+        const supplyItem = supplyItemsData.find((si) => si.id === item.itemName || si.name === item.itemName);
+        return {
+          quantity: item.quantity,
+          unit: item.unit,
+          specifications: item.specifications,
+          notes: item.notes,
+          supplyItemId: supplyItem ? supplyItem.id : undefined,
+        };
+      });
+
+      // Prepare payload for API
+      const payload = {
+        title: formData.description || null,
+        type: formData.type,
+        submissionDate: formData.submissionDate,
+        description: formData.description || null,
+        notes: formData.notes || null,
+        projectId: selectedProject?.id,
+        officerId: selectedOfficer?.id,
+        items: mappedItems,
+      };
+
+      // Send POST request to API
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Gagal membuat form");
       }
-      
+
+      // Save the current form data for PDF generation with actual names
+      const pdfFormData = {
+        project: selectedProject?.name || formData.project,
+        type: formData.type,
+        projectOfficer: selectedOfficer?.name || formData.projectOfficer,
+        submissionDate: formData.submissionDate,
+        description: formData.description,
+        notes: formData.notes
+      };
+
+      // Map items with actual supply item names for PDF
+      const pdfItems = items.map((item) => {
+        const supplyItem = supplyItemsData.find((si) => si.id === item.itemName);
+        return {
+          id: item.id,
+          itemName: supplyItem?.name || item.itemName,
+          quantity: item.quantity,
+          unit: supplyItem?.unit || item.unit,
+          specifications: supplyItem?.specifications || item.specifications,
+          notes: item.notes,
+        };
+      });
+
+      formSubmittedData.current = {
+        formData: pdfFormData,
+        items: pdfItems,
+      };
+
       try {
         // Show PDF preview/download
-        setShowPdfPreview(true)
-        
+        setShowPdfPreview(true);
+
         // If there's any error with the PDF components, we'll use the fallback
-        window.addEventListener('error', (e) => {
-          if (e.message?.includes('react-pdf') || e.message?.includes('@react-pdf')) {
-            console.error('PDF error detected, using fallback method:', e)
-            setUseFallbackPdf(true)
-          }
-        }, { once: true })
+        window.addEventListener(
+          "error",
+          (e) => {
+            if (e.message?.includes("react-pdf") || e.message?.includes("@react-pdf")) {
+              console.error("PDF error detected, using fallback method:", e);
+              setUseFallbackPdf(true);
+            }
+          },
+          { once: true }
+        );
       } catch (pdfError) {
-        console.error("Error with PDF preview:", pdfError)
-        setUseFallbackPdf(true)
+        console.error("Error with PDF preview:", pdfError);
+        setUseFallbackPdf(true);
       }
-      
-      // Optional: You could send the data to your backend here
-      // const response = await fetch('/api/forms', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ...formData, items })
-      // })
-      
       // No automatic redirect - user must manually close the PDF preview
     } catch (error) {
-      console.error("Error submitting form:", error)
+      if (error instanceof Error) {
+        alert(error.message || "Terjadi kesalahan saat mengirim form.");
+      } else {
+        alert("Terjadi kesalahan saat mengirim form.");
+      }
+      console.error("Error submitting form:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <SidebarInset>
@@ -265,10 +327,9 @@ export default function NewFormPage() {
                       <SelectValue placeholder="Pilih proyek" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="downtown-mall">Mall Downtown Fase 2</SelectItem>
-                      <SelectItem value="residential-complex">Kompleks Perumahan A</SelectItem>
-                      <SelectItem value="highway-bridge">Renovasi Jembatan Jalan Raya</SelectItem>
-                      <SelectItem value="office-building">Gedung Kantor Ramah Lingkungan</SelectItem>
+                      {projectsData.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -304,7 +365,7 @@ export default function NewFormPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {projectOfficersData.map((officer) => (
-                      <SelectItem key={officer.id} value={officer.name}>
+                      <SelectItem key={officer.id} value={officer.id}>
                         <div className="flex flex-col">
                           <span>{officer.name}</span>
                           <span className="text-xs text-muted-foreground">
@@ -360,7 +421,7 @@ export default function NewFormPage() {
                       <TableRow key={item.id}>
                         <TableCell>
                           <Select
-                            value={item.itemName}
+                            value={item.itemName || ""}
                             onValueChange={(value) => handleItemChange(item.id, "itemName", value)}
                           >
                             <SelectTrigger>
@@ -368,7 +429,7 @@ export default function NewFormPage() {
                             </SelectTrigger>
                             <SelectContent>
                               {supplyItemsData.map((supplyItem) => (
-                                <SelectItem key={supplyItem.id} value={supplyItem.name}>
+                                <SelectItem key={supplyItem.id} value={supplyItem.id}>
                                   <div className="flex flex-col">
                                     <span>{supplyItem.name}</span>
                                     <span className="text-xs text-muted-foreground">
@@ -392,22 +453,24 @@ export default function NewFormPage() {
                         </TableCell>
                         <TableCell>
                           <Input
-                            value={item.unit}
+                            value={item.unit || ""}
                             onChange={(e) => handleItemChange(item.id, "unit", e.target.value)}
                             placeholder="Satuan"
                             required
+                            readOnly
                           />
                         </TableCell>
                         <TableCell>
                           <Input
-                            value={item.specifications}
+                            value={item.specifications || ""}
                             onChange={(e) => handleItemChange(item.id, "specifications", e.target.value)}
                             placeholder="Spesifikasi"
+                            readOnly
                           />
                         </TableCell>
                         <TableCell>
                           <Input
-                            value={item.notes}
+                            value={item.notes || ""}
                             onChange={(e) => handleItemChange(item.id, "notes", e.target.value)}
                             placeholder="Catatan tambahan"
                           />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,79 +28,54 @@ import {
 import { Search, Plus, MoreHorizontal, Eye, Edit, Package, Truck, Upload } from "lucide-react"
 import Link from "next/link"
 
-const formsData = [
-  {
-    id: "FORM-2025-001",
-    title: "Persetujuan Anggaran Proyek",
-    submitter: "John Doe",
-    dateSubmitted: "2025-07-28",
-    status: "Menunggu",
-    priority: "Tinggi",
-    type: "Anggaran"
-  },
-  {
-    id: "FORM-2025-002",
-    title: "Permintaan Inspeksi Lokasi",
-    submitter: "Jane Smith",
-    dateSubmitted: "2025-07-29",
-    status: "Disetujui",
-    priority: "Sedang",
-    type: "Inspeksi"
-  },
-  {
-    id: "FORM-2025-003",
-    title: "Laporan Masalah Kualitas Material",
-    submitter: "Robert Johnson",
-    dateSubmitted: "2025-07-30",
-    status: "Sedang Ditinjau",
-    priority: "Tinggi",
-    type: "Laporan Masalah"
-  },
-  {
-    id: "FORM-2025-004",
-    title: "Permintaan Pembayaran Kontraktor",
-    submitter: "Sarah Williams",
-    dateSubmitted: "2025-07-31",
-    status: "Menunggu",
-    priority: "Sedang",
-    type: "Pembayaran"
-  },
-  {
-    id: "FORM-2025-005",
-    title: "Permintaan Perubahan Order",
-    submitter: "Michael Brown",
-    dateSubmitted: "2025-08-01",
-    status: "Disetujui",
-    priority: "Rendah",
-    type: "Permintaan Perubahan"
-  },
-  {
-    id: "FORM-2025-006",
-    title: "Laporan Insiden Keselamatan",
-    submitter: "Emily Davis",
-    dateSubmitted: "2025-08-02",
-    status: "Tinjauan Mendesak",
-    priority: "Kritis",
-    type: "Laporan Insiden"
-  },
-]
+// API-connected forms data
+export interface ApiForm {
+  id: string;
+  formNumber: string;
+  title: string | null;
+  type: string;
+  submissionDate: string;
+  description: string | null;
+  notes: string | null;
+  project?: { name: string } | null;
+  officer?: { name: string } | null;
+  createdAt?: string;
+}
+
 
 export default function FormsPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [typeFilter, setTypeFilter] = useState("all")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [forms, setForms] = useState<ApiForm[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredForms = formsData.filter((form) => {
+  useEffect(() => {
+    const fetchForms = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/forms");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Gagal mengambil data forms");
+        setForms(data.data || []);
+      } catch (err: any) {
+        setError(err.message || "Gagal mengambil data forms");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchForms();
+  }, []);
+
+  const filteredForms = forms.filter((form) => {
     const matchesSearch =
-      form.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      form.submitter.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      form.id.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesStatus = statusFilter === "all" || form.status.toLowerCase() === statusFilter.toLowerCase()
-    const matchesType = typeFilter === "all" || form.type.toLowerCase() === typeFilter.toLowerCase()
-
-    return matchesSearch && matchesStatus && matchesType
-  })
+      (form.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (form.officer?.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (form.formNumber?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+    const matchesType = typeFilter === "all" || (form.type?.toLowerCase() || "") === typeFilter.toLowerCase();
+    return matchesSearch && matchesType;
+  });
 
   return (
     <SidebarInset>
@@ -149,7 +124,7 @@ export default function FormsPage() {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formsData.length}</div>
+              <div className="text-2xl font-bold">{loading ? '-' : forms.length}</div>
               <p className="text-xs text-muted-foreground">Formulir yang dikirim</p>
             </CardContent>
           </Card>
@@ -188,61 +163,74 @@ export default function FormsPage() {
             </div>
 
             <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID Formulir</TableHead>
-                    <TableHead>Judul</TableHead>
-                    <TableHead>Pengaju</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredForms.map((form) => (
-                    <TableRow key={form.id}>
-                      <TableCell className="font-mono text-sm">
-                        {form.id}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{form.title}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {form.type}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{form.submitter}</TableCell>
-                      <TableCell>{new Date(form.dateSubmitted).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/forms/${form.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                Lihat Detail
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Proses Formulir
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Unduh PDF</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+              {error && (
+                <div className="p-4 text-red-600">{error}</div>
+              )}
+              {loading ? (
+                <div className="p-4 text-muted-foreground">Memuat data formulir...</div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID Formulir</TableHead>
+                      <TableHead>Judul</TableHead>
+                      <TableHead>Pengaju</TableHead>
+                      <TableHead>Tanggal</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredForms.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center text-muted-foreground">Tidak ada data</TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredForms.map((form) => (
+                        <TableRow key={form.id}>
+                          <TableCell className="font-mono text-sm">
+                            {form.formNumber || form.id}
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{form.title || '-'}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {form.type}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{form.officer?.name || '-'}</TableCell>
+                          <TableCell>{form.submissionDate ? new Date(form.submissionDate).toLocaleDateString() : '-'}</TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                                <DropdownMenuItem asChild>
+                                  <Link href={`/forms/${form.id}`}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Lihat Detail
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Proses Formulir
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Unduh PDF</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              )}
             </div>
           </CardContent>
         </Card>

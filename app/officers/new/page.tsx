@@ -34,6 +34,7 @@ export default function NewOfficerPage() {
     name: "",
     phone: "",
   })
+  const [error, setError] = useState<string | null>(null)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -45,15 +46,24 @@ export default function NewOfficerPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Here you would typically make an API call to save the officer
-    console.log("Saving officer:", formData)
-    
-    setIsLoading(false)
-    router.push("/officers")
+    setError(null)
+    try {
+      const res = await fetch("/api/officers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || "Gagal menambah petugas")
+        setIsLoading(false)
+        return
+      }
+      router.push("/officers")
+    } catch (err: any) {
+      setError(err.message || "Gagal menambah petugas")
+      setIsLoading(false)
+    }
   }
 
   const isFormValid = formData.name && formData.phone 
@@ -164,6 +174,11 @@ export default function NewOfficerPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="text-red-600 text-sm mt-4">{error}</div>
+          )}
 
           {/* Action Buttons */}
           <Card className="mt-6">

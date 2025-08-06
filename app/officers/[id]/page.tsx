@@ -37,102 +37,60 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-// Mock data - same as in the main page
-const officersData = [
-  {
-    id: 1,
-    name: "John Smith",
-    phone: "+1 (555) 123-4567",
-    joinDate: "2022-01-15",
-    activeProjects: 3,
-    completedProjects: 12,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    phone: "+1 (555) 234-5678",
-    joinDate: "2022-06-20",
-    activeProjects: 2,
-    completedProjects: 8,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 3,
-    name: "Mike Wilson",
-    phone: "+1 (555) 345-6789",
-    joinDate: "2021-09-10",
-    activeProjects: 4,
-    completedProjects: 18,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 4,
-    name: "Emily Davis",
-    phone: "+1 (555) 456-7890",
-    joinDate: "2023-02-14",
-    activeProjects: 1,
-    completedProjects: 4,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 5,
-    name: "Tom Brown",
-    phone: "+1 (555) 567-8901",
-    joinDate: "2023-04-01",
-    activeProjects: 2,
-    completedProjects: 3,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 6,
-    name: "Lisa Anderson",
-    phone: "+1 (555) 678-9012",
-    joinDate: "2022-11-30",
-    activeProjects: 0,
-    completedProjects: 6,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-]
+// Ambil data officer dari API
+import { useEffect } from "react"
 
-// Mock projects data
-const mockProjects = [
-  {
-    id: 1,
-    name: "Downtown Office Complex",
-    status: "Active",
-    progress: 75,
-    deadline: "2024-12-15",
-  },
-  {
-    id: 2,
-    name: "Residential Tower Phase 2",
-    status: "Active",
-    progress: 45,
-    deadline: "2025-03-20",
-  },
-  {
-    id: 3,
-    name: "Shopping Mall Renovation",
-    status: "Completed",
-    progress: 100,
-    deadline: "2024-01-30",
-  },
-]
+
+
 
 export default function OfficerDetailPage() {
   const params = useParams()
-  const officerId = Number(params.id)
-  
-  const officer = officersData.find(o => o.id === officerId)
-  
-  if (!officer) {
+  const officerId = params.id
+  const [officer, setOfficer] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!officerId) return
+    setLoading(true)
+    setError(null)
+    fetch(`/api/officers?id=${officerId}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || 'Gagal mengambil data officer')
+        }
+        return res.json()
+      })
+      .then((data) => {
+        setOfficer(data.data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError(err.message)
+        setLoading(false)
+      })
+  }, [officerId])
+
+  if (loading) {
+    return (
+      <SidebarInset>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold">Memuat data petugas...</h2>
+          </div>
+        </div>
+      </SidebarInset>
+    )
+  }
+
+  if (error || !officer) {
     return (
       <SidebarInset>
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <h2 className="text-2xl font-bold">Petugas Tidak Ditemukan</h2>
-            <p className="text-muted-foreground mt-2">Petugas yang Anda cari tidak ada.</p>
+            <p className="text-muted-foreground mt-2">{error || 'Petugas yang Anda cari tidak ada.'}</p>
             <Button asChild className="mt-4">
               <Link href="/officers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -146,6 +104,7 @@ export default function OfficerDetailPage() {
   }
 
 
+  // Helper badge
   const getProjectStatusBadge = (status: string) => {
     return status === "Active" ? (
       <Badge className="bg-blue-100 text-blue-800">Aktif</Badge>
@@ -221,7 +180,7 @@ export default function OfficerDetailPage() {
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={officer.avatar || "/placeholder.svg"} alt={officer.name} />
                   <AvatarFallback className="text-2xl">
-                    {officer.name.split(" ").map((n) => n[0]).join("")}
+                    {officer.name.split(" ").map((n: string) => n[0]).join("")}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -244,21 +203,14 @@ export default function OfficerDetailPage() {
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Tanggal Bergabung</span>
                 </div>
-                <p>{new Date(officer.joinDate).toLocaleDateString()}</p>
+                <p>{officer.createdAt ? new Date(officer.createdAt).toLocaleDateString() : '-'}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Proyek Aktif</span>
+                  <span className="text-sm font-medium">Jumlah Formulir</span>
                 </div>
-                <p className="text-2xl font-bold">{officer.activeProjects}</p>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Proyek Selesai</span>
-                </div>
-                <p className="text-2xl font-bold">{officer.completedProjects}</p>
+                <p className="text-2xl font-bold">{officer.forms?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -269,56 +221,39 @@ export default function OfficerDetailPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Proyek yang Ditugaskan</CardTitle>
-                <CardDescription>Proyek yang saat ini ditugaskan ke {officer.name}</CardDescription>
+                <CardTitle>Formulir yang Ditangani</CardTitle>
+                <CardDescription>Formulir yang saat ini ditangani oleh {officer.name}</CardDescription>
               </div>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                Tugaskan Proyek Baru
-              </Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockProjects.map((project) => (
-                <Card key={project.id} className="border-l-4 border-l-blue-500">
-                  <CardContent className="pt-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold">{project.name}</h3>
-                          {getProjectStatusBadge(project.status)}
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-                          <div>
-                            <span className="font-medium">Progres:</span> {project.progress}%
+              {officer.forms && officer.forms.length > 0 ? (
+                officer.forms.map((form: any) => (
+                  <Card key={form.id} className="border-l-4 border-l-blue-500">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold">{form.project?.name || 'Tanpa Proyek'}</h3>
+                            {/* Status badge bisa dikembangkan dari status form/project */}
                           </div>
-                          <div>
-                            <span className="font-medium">Tenggat:</span> {new Date(project.deadline).toLocaleDateString()}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+                            <div>
+                              <span className="font-medium">Jumlah Item:</span> {form.items?.length || 0}
+                            </div>
+                            <div>
+                              <span className="font-medium">Tanggal Dibuat:</span> {form.createdAt ? new Date(form.createdAt).toLocaleDateString() : '-'}
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    {/* Progress Bar */}
-                    <div className="mt-3">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all" 
-                          style={{ width: `${project.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <p className="text-muted-foreground">Belum ada formulir yang ditangani.</p>
+              )}
             </div>
           </CardContent>
         </Card>

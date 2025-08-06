@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -39,117 +39,65 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-const officersData = [
-  {
-    id: 1,
-    name: "John Smith",
-    email: "john.smith@company.com",
-    phone: "+1 (555) 123-4567",
-    position: "Senior Project Manager",
-    department: "Construction",
-    joinDate: "2022-01-15",
-    activeProjects: 3,
-    completedProjects: 12,
-    workload: "High",
-    location: "New York, NY",
-    avatar: "/placeholder.svg?height=40&width=40",
-    specialization: "Commercial Construction",
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    email: "sarah.johnson@company.com",
-    phone: "+1 (555) 234-5678",
-    position: "Project Manager",
-    department: "Residential",
-    joinDate: "2022-06-20",
-    activeProjects: 2,
-    completedProjects: 8,
-    workload: "Medium",
-    location: "Los Angeles, CA",
-    avatar: "/placeholder.svg?height=40&width=40",
-    specialization: "Residential Development",
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Mike Wilson",
-    email: "mike.wilson@company.com",
-    phone: "+1 (555) 345-6789",
-    position: "Senior Project Manager",
-    department: "Infrastructure",
-    joinDate: "2021-09-10",
-    activeProjects: 4,
-    completedProjects: 18,
-    workload: "High",
-    location: "Chicago, IL",
-    avatar: "/placeholder.svg?height=40&width=40",
-    specialization: "Infrastructure & Roads",
-    status: "Active",
-  },
-  {
-    id: 4,
-    name: "Emily Davis",
-    email: "emily.davis@company.com",
-    phone: "+1 (555) 456-7890",
-    position: "Project Manager",
-    department: "Green Building",
-    joinDate: "2023-02-14",
-    activeProjects: 1,
-    completedProjects: 4,
-    workload: "Low",
-    location: "Seattle, WA",
-    avatar: "/placeholder.svg?height=40&width=40",
-    specialization: "Sustainable Construction",
-    status: "Active",
-  },
-  {
-    id: 5,
-    name: "Tom Brown",
-    email: "tom.brown@company.com",
-    phone: "+1 (555) 567-8901",
-    position: "Assistant Project Manager",
-    department: "Renovation",
-    joinDate: "2023-04-01",
-    activeProjects: 2,
-    completedProjects: 3,
-    workload: "Medium",
-    location: "Miami, FL",
-    avatar: "/placeholder.svg?height=40&width=40",
-    specialization: "Home Renovation",
-    status: "Active",
-  },
-  {
-    id: 6,
-    name: "Lisa Anderson",
-    email: "lisa.anderson@company.com",
-    phone: "+1 (555) 678-9012",
-    position: "Project Manager",
-    department: "Commercial",
-    joinDate: "2022-11-30",
-    activeProjects: 0,
-    completedProjects: 6,
-    workload: "Low",
-    location: "Dallas, TX",
-    avatar: "/placeholder.svg?height=40&width=40",
-    specialization: "Commercial Spaces",
-    status: "On Leave",
-  },
-]
+// Types
+interface Officer {
+  id: string
+  name: string
+  email: string | null
+  phone: string
+  role: string
+  createdAt: string
+  forms?: any[]
+}
+
+interface ApiResponse {
+  success: boolean
+  data: Officer[]
+  pagination?: {
+    currentPage: number
+    totalPages: number
+    totalItems: number
+    itemsPerPage: number
+  }
+}
 
 export default function OfficersPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [departmentFilter, setDepartmentFilter] = useState("all")
+  const [officers, setOfficers] = useState<Officer[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const filteredOfficers = officersData.filter((officer) => {
+  // Fetch officers from API
+  useEffect(() => {
+    fetchOfficers()
+  }, [])
+
+  const fetchOfficers = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/officers')
+      const result: ApiResponse = await response.json()
+      
+      if (result.success) {
+        setOfficers(result.data)
+      } else {
+        setError('Gagal memuat data petugas')
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan saat memuat data')
+      console.error('Error fetching officers:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const filteredOfficers = officers.filter((officer) => {
     const matchesSearch =
       officer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      officer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      officer.position.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesDepartment = departmentFilter === "all" || officer.department.toLowerCase() === departmentFilter
+      (officer.email && officer.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      officer.role.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesSearch && matchesDepartment
+    return matchesSearch
   })
 
   const getWorkloadBadge = (workload: string) => {
@@ -171,6 +119,68 @@ export default function OfficersPage() {
       <Badge className="bg-green-100 text-green-800">Aktif</Badge>
     ) : (
       <Badge variant="secondary">Cuti</Badge>
+    )
+  }
+
+  if (loading) {
+    return (
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Petugas</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="text-center py-8">
+            <p>Memuat data petugas...</p>
+          </div>
+        </div>
+      </SidebarInset>
+    )
+  }
+
+  if (error) {
+    return (
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Dasbor</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Petugas</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="text-center py-8">
+            <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <p className="text-red-600">{error}</p>
+            <Button onClick={fetchOfficers} className="mt-4">
+              Coba Lagi
+            </Button>
+          </div>
+        </div>
+      </SidebarInset>
     )
   }
 
@@ -215,20 +225,20 @@ export default function OfficersPage() {
               <UserCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{officersData.length}</div>
+              <div className="text-2xl font-bold">{officers.length}</div>
               <p className="text-xs text-muted-foreground">Semua petugas</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Proyek Aktif</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Forms</CardTitle>
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {officersData.reduce((sum, officer) => sum + officer.activeProjects, 0)}
+                {officers.reduce((sum, officer) => sum + (officer.forms?.length || 0), 0)}
               </div>
-              <p className="text-xs text-muted-foreground">Sedang dikelola</p>
+              <p className="text-xs text-muted-foreground">Forms dikelola</p>
             </CardContent>
           </Card>
         </div>
@@ -252,83 +262,96 @@ export default function OfficersPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredOfficers.map((officer) => (
-                <Card key={officer.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={officer.avatar || "/placeholder.svg"} alt={officer.name} />
-                          <AvatarFallback>
-                            {officer.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
+              {filteredOfficers.length === 0 ? (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-muted-foreground">
+                    {searchTerm ? "Tidak ada petugas yang ditemukan" : "Belum ada petugas"}
+                  </p>
+                </div>
+              ) : (
+                filteredOfficers.map((officer) => (
+                  <Card key={officer.id} className="hover:shadow-md transition-shadow">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-4">
+                          <Avatar className="h-12 w-12">
+                            <AvatarFallback>
+                              {officer.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <CardTitle className="text-lg">{officer.name}</CardTitle>
+                            <CardDescription>{officer.role}</CardDescription>
+                          </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/officers/${officer.id}`}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Lihat Profil
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Petugas
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Tugaskan Proyek</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <CardTitle className="text-lg">{officer.name}</CardTitle>
-                          <CardDescription>{officer.position}</CardDescription>
+                          <p className="text-muted-foreground">Forms</p>
+                          <p className="font-medium">{officer.forms?.length || 0}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Status</p>
+                          <Badge className="bg-green-100 text-green-800">Aktif</Badge>
                         </div>
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/officers/${officer.id}`}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              Lihat Profil
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Petugas
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>Tugaskan Proyek</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Proyek Aktif</p>
-                        <p className="font-medium">{officer.activeProjects}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Selesai</p>
-                        <p className="font-medium">{officer.completedProjects}</p>
-                      </div>
-                    </div>
 
-                    <Separator />
+                      <Separator />
 
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span>{officer.phone}</span>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-muted-foreground" />
+                          <span>{officer.phone}</span>
+                        </div>
+                        {officer.email && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">✉</span>
+                            <span className="text-xs">{officer.email}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>Bergabung {new Date(officer.createdAt).toLocaleDateString('id-ID')}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>Bergabung {new Date(officer.joinDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
 
-                    <div className="flex justify-between items-center pt-2">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/officers/${officer.id}`}>Lihat Profil</Link>
-                      </Button>
-                      <Button size="sm">Tugaskan Proyek</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="flex justify-between items-center pt-2">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/officers/${officer.id}`}>Lihat Profil</Link>
+                        </Button>
+                        <Button size="sm">Tugaskan Proyek</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

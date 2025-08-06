@@ -24,11 +24,12 @@ import { Badge } from "@/components/ui/badge"
 import { Upload, Download, FileSpreadsheet, CheckCircle, AlertCircle, ArrowLeft, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { parseExcelFile, parseCSVFile, validateItems, type ParsedItem, type ValidationResult } from "@/lib/import-utils"
+import { useToast } from "@/hooks/use-toast"
 
 interface ImportItem {
   id: string
   name: string
-  unit: string
   specifications: string
   status: "valid" | "error" | "warning"
   errors: string[]
@@ -36,74 +37,149 @@ interface ImportItem {
 
 export default function ImportSupplyItemsPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [importing, setImporting] = useState(false)
+  const [parsing, setParsing] = useState(false)
   const [importProgress, setImportProgress] = useState(0)
   const [previewData, setPreviewData] = useState<ImportItem[]>([])
   const [importComplete, setImportComplete] = useState(false)
+  const [importResult, setImportResult] = useState<{
+    imported: number
+    errors: number
+  } | null>(null)
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0]
-    if (selectedFile) {
-      setFile(selectedFile)
-      // Simulate file parsing and preview
-      setTimeout(() => {
-        const mockPreviewData: ImportItem[] = [
-          {
-            id: "1",
-            name: "Balok Baja I-Beam 25ft",
-            unit: "buah",
-            specifications: "Panjang 25ft, Baja Grade A36",
-            status: "valid",
-            errors: [],
-          },
-          {
-            id: "2",
-            name: "Campuran Beton Premium",
-            unit: "meter kubik",
-            specifications: "5000 PSI, Semen Portland",
-            status: "valid",
-            errors: [],
-          },
-          {
-            id: "3",
-            name: "Kabel Listrik",
-            unit: "",
-            specifications: "Spesifikasi tidak ada",
-            status: "error",
-            errors: ["Spesifikasi wajib diisi"],
-          },
-          {
-            id: "4",
-            name: "Lembaran Plywood 4x8 Premium",
-            unit: "lembar",
-            specifications: "4x8 kaki, Grade A/A, kualitas marine",
-            status: "valid",
-            errors: [],
-          },
-        ]
-        setPreviewData(mockPreviewData)
-      }, 1000)
+    if (!selectedFile) return
+
+    setFile(selectedFile)
+    setParsing(true)
+    setPreviewData([])
+
+    try {
+      let parsedItems: ParsedItem[] = []
+      
+      if (selectedFile.name.endsWith('.csv')) {
+        parsedItems = await parseCSVFile(selectedFile)
+      } else if (selectedFile.name.endsWith('.xlsx') || selectedFile.name.endsWith('.xls')) {
+        parsedItems = await parseExcelFile(selectedFile)
+      } else {
+        throw new Error('Format file tidak didukung. Gunakan file CSV atau Excel.')
+      }
+
+      const validation = validateItems(parsedItems)
+      
+      // Convert to ImportItem format
+      const previewItems: ImportItem[] = [
+        ...validation.valid.map((item, index) => ({
+          id: `valid-${index}`,
+          name: item.name,
+          specifications: item.specifications || '',
+          status: 'valid' as const,
+          errors: []
+        })),
+        ...validation.errors.map((error, index) => ({
+          id: `error-${index}`,
+          name: error.item.name || '',
+          specifications: error.item.specifications || '',
+          status: 'error' as const,
+          errors: error.errors
+        }))
+      ]
+
+      setPreviewData(previewItems)
+
+      if (validation.errors.length > 0) {
+        toast({
+          title: "Peringatan",
+          description: `${validation.errors.length} item memiliki error dan perlu diperbaiki`,
+          variant: "destructive"
+        })
+      }
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Gagal membaca file",
+        variant: "destructive"
+      })
+    } finally {
+      setParsing(false)
     }
   }
 
   const handleImport = async () => {
+    const validItems = previewData.filter(item => item.status === 'valid')
+    
+    if (validItems.length === 0) {
+      toast({
+        title: "Error",
+        description: "Tidak ada item valid untuk diimport",
+        variant: "destructive"
+      })
+      return
+    }
+
     setImporting(true)
     setImportProgress(0)
 
-    // Simulate import progress
-    const interval = setInterval(() => {
-      setImportProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setImporting(false)
-          setImportComplete(true)
-          return 100
-        }
-        return prev + 10
+    try {
+      // Prepare items for API
+      const itemsToImport = validItems.map(item => ({
+        name: item.name,
+        specifications: item.specifications || undefined
+      }))
+
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setImportProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval)
+            return 90
+          }
+          return prev + 10
+        })
+      }, 100)
+
+      // Call import API
+      const response = await fetch('/api/supply-items/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: itemsToImport }),
       })
-    }, 200)
+
+      const data = await response.json()
+      clearInterval(progressInterval)
+      setImportProgress(100)
+
+      if (response.ok && data.success) {
+        setImportResult({
+          imported: data.data.imported,
+          errors: previewData.filter(item => item.status === 'error').length
+        })
+        setImportComplete(true)
+        
+        toast({
+          title: "Berhasil",
+          description: `${data.data.imported} item berhasil diimport`,
+        })
+      } else {
+        throw new Error(data.error || 'Gagal mengimport item')
+      }
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Terjadi kesalahan saat import",
+        variant: "destructive"
+      })
+    } finally {
+      setImporting(false)
+    }
   }
 
   const removeItem = (id: string) => {
@@ -112,10 +188,12 @@ export default function ImportSupplyItemsPage() {
 
   const downloadTemplate = () => {
     // Create CSV template
-    const csvContent = `Name,Unit,Specifications
-Balok Baja I-Beam 20ft,buah,"Panjang 20ft, Baja Grade A36"
-Campuran Beton,meter kubik,"4000 PSI, Semen Portland"
-Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
+    const csvContent = `Name,Specifications
+Balok Baja I-Beam 20ft,"Panjang 20ft, Baja Grade A36"
+Campuran Beton,"4000 PSI, Semen Portland"
+Kabel Listrik 12 AWG,"THHN/THWN-2, rated 600V"
+Cat Tembok Interior,"Cat latex untuk interior"
+Pipa PVC 4 inch,`
 
     const blob = new Blob([csvContent], { type: "text/csv" })
     const url = window.URL.createObjectURL(blob)
@@ -185,7 +263,7 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Import Item Persediaan</h1>
-              <p className="text-muted-foreground">Import item persediaan dari file Excel atau CSV</p>
+              <p className="text-muted-foreground">Import item persediaan dari file CSV. Hanya nama item yang wajib diisi.</p>
             </div>
           </div>
           <Button variant="outline" asChild>
@@ -202,7 +280,7 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
               <CardHeader>
                 <CardTitle>Upload File</CardTitle>
                 <CardDescription>
-                  Upload file Excel (.xlsx) atau CSV (.csv) yang berisi data item persediaan
+                  Upload file CSV (.csv) yang berisi data item persediaan. Hanya nama item yang wajib diisi.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -211,7 +289,7 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
                   <Input
                     id="file"
                     type="file"
-                    accept=".xlsx,.xls,.csv"
+                    accept=".csv"
                     onChange={handleFileSelect}
                     ref={fileInputRef}
                   />
@@ -222,6 +300,7 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
                     <FileSpreadsheet className="h-4 w-4" />
                     <AlertDescription>
                       File terpilih: <strong>{file.name}</strong> ({(file.size / 1024).toFixed(1)} KB)
+                      {parsing && <span className="block mt-1 text-blue-600">Sedang memproses file...</span>}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -249,20 +328,19 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="font-medium">Kolom Wajib:</div>
                     <div></div>
-                    <div>• Nama</div>
+                    <div>• Name (Nama Item)</div>
                   </div>
                   <Separator />
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="font-medium">Kolom Opsional:</div>
                     <div></div>
-                    <div>• Satuan</div>
-                    <div>• Spesifikasi</div>
+                    <div>• Specifications (Spesifikasi)</div>
                   </div>
                 </div>
 
                 <Alert className="mt-4">
                   <AlertDescription>
-                    <strong>Tips:</strong> Download file template untuk melihat format yang tepat.
+                    <strong>Tips:</strong> Download file template untuk melihat format yang tepat. Hanya nama item yang wajib diisi.
                   </AlertDescription>
                 </Alert>
               </CardContent>
@@ -300,7 +378,6 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
                     <TableRow>
                       <TableHead>Status</TableHead>
                       <TableHead>Nama</TableHead>
-                      <TableHead>Satuan</TableHead>
                       <TableHead>Spesifikasi</TableHead>
                       <TableHead>Masalah</TableHead>
                       <TableHead className="text-right">Aksi</TableHead>
@@ -311,7 +388,6 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
                       <TableRow key={item.id}>
                         <TableCell>{getStatusBadge(item.status)}</TableCell>
                         <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell>{item.unit || "-"}</TableCell>
                         <TableCell className="max-w-[200px] truncate">{item.specifications || "-"}</TableCell>
                         <TableCell>
                           {item.errors.length > 0 && (
@@ -373,18 +449,12 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{validItems}</div>
+                    <div className="text-2xl font-bold text-green-600">{importResult?.imported || 0}</div>
                     <div className="text-sm text-muted-foreground">Item Diimport</div>
                   </div>
-                  {warningItems > 0 && (
+                  {(importResult?.errors || 0) > 0 && (
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-yellow-600">{warningItems}</div>
-                      <div className="text-sm text-muted-foreground">Dengan Peringatan</div>
-                    </div>
-                  )}
-                  {errorItems > 0 && (
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-red-600">{errorItems}</div>
+                      <div className="text-2xl font-bold text-red-600">{importResult?.errors || 0}</div>
                       <div className="text-sm text-muted-foreground">Dilewati (Error)</div>
                     </div>
                   )}
@@ -401,6 +471,7 @@ Kabel Listrik 12 AWG,kaki,"THHN/THWN-2, rated 600V"`
                       setPreviewData([])
                       setFile(null)
                       setImportProgress(0)
+                      setImportResult(null)
                     }}
                   >
                     Import Item Lainnya

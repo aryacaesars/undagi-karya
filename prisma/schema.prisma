@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models
+model Client {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String?
+  address      String?
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  @@map("clients")
+}
+
+model Project {
+  id           String    @id @default(cuid())
+  name         String
+  client       String?
+  officer      String?
+  type         String?
+  location     String?
+  description  String?
+  startDate    DateTime?
+  endDate      DateTime?
+  
+  // Relations
+  forms        Form[]
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  @@map("projects")
+}
+
+model Officer {
+  id           String    @id @default(cuid())
+  name         String
+  role         String
+  email        String?
+  phone        String?
+  
+  // Relations
+  forms        Form[]
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  @@map("officers")
+}
+
+model SupplyItem {
+  id            String    @id @default(cuid())
+  name          String
+  specifications String?
+  
+  // Relations
+  formItems     FormItem[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("supply_items")
+}
+
+model Form {
+  id              String    @id @default(cuid())
+  formNumber      String    @unique
+  title           String?
+  type            String
+  submissionDate  DateTime
+  description     String?
+  notes           String?
+  
+  // Foreign Keys
+  projectId       String
+  officerId       String
+  
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  officer         Officer   @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  items           FormItem[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("forms")
+}
+
+model FormItem {
+  id              String    @id @default(cuid())
+  quantity        Int
+  unit            String
+  specifications  String?
+  notes           String?
+  
+  // Foreign Keys
+  formId          String
+  supplyItemId    String
+  
+  // Relations
+  form            Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  supplyItem      SupplyItem @relation(fields: [supplyItemId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("form_items")
+}
+
+model Vendor {
+  id              String    @id @default(cuid())
+  name            String
+  phone           String?
+  address         String?
+  contactPerson   String?
+  paymentTerms    String?
+  description     String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("vendors")
+}
+

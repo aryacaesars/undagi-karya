@@ -19,13 +19,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Building2, Save, ArrowLeft } from "lucide-react"
+import { Building2, Save, ArrowLeft, AlertCircle, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { CreateVendorData } from "@/types/vendor"
 
 export default function NewVendorPage() {
   const router = useRouter()
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [formData, setFormData] = useState<CreateVendorData>({
     name: "",
     phone: "",
     address: "",
@@ -34,18 +38,46 @@ export default function NewVendorPage() {
     description: "",
   })
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof CreateVendorData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the data to your API
-    console.log("Creating vendor:", formData)
-    // Simulate API call
-    setTimeout(() => {
-      router.push("/vendors")
-    }, 1000)
+    
+    if (!formData.name.trim()) {
+      setError("Nama vendor harus diisi")
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch("/api/vendors", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Gagal membuat vendor")
+      }
+
+      if (result.success) {
+        router.push(`/vendors/${result.data.id}`)
+      } else {
+        throw new Error(result.error || "Gagal membuat vendor")
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -91,6 +123,13 @@ export default function NewVendorPage() {
           </Button>
         </div>
 
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
@@ -114,13 +153,12 @@ export default function NewVendorPage() {
 
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Nomor Telepon *</Label>
+                <Label htmlFor="phone">Nomor Telepon</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   placeholder="+62 812-3456-7890"
-                  required
                 />
               </div>
 
@@ -186,9 +224,13 @@ export default function NewVendorPage() {
           </Card>
 
           <div className="flex items-center gap-4">
-            <Button type="submit" className="flex-1 max-w-xs">
-              <Save className="mr-2 h-4 w-4" />
-              Buat Vendor
+            <Button type="submit" className="flex-1 max-w-xs" disabled={loading}>
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {loading ? "Membuat..." : "Buat Vendor"}
             </Button>
             <Button type="button" variant="outline" asChild>
               <Link href="/vendors">Batal</Link>
