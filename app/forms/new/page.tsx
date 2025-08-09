@@ -95,14 +95,14 @@ export default function NewFormPage() {
   });
 
   const [items, setItems] = useState<RequestItem[]>([
-    {
-      id: "1",
+    ...Array.from({ length: 10 }, (_, index) => ({
+      id: (index + 1).toString(),
       itemName: "",
       quantity: 0,
       unit: "",
       specifications: "",
       notes: "",
-    },
+    })),
   ])
 
   const handleInputChange = (field: string, value: string) => {
@@ -120,8 +120,8 @@ export default function NewFormPage() {
               return {
                 ...item,
                 itemName: ensureString(value), // Store the ID for API submission
-                unit: ensureString(selectedItem.unit), // Ensure string, not null/undefined
-                specifications: ensureString(selectedItem.specifications), // Ensure string, not null/undefined
+                unit: ensureString(selectedItem.unit), // Auto-fill with default unit
+                specifications: ensureString(selectedItem.specifications), // Auto-fill with default specifications
               }
             }
           }
@@ -215,15 +215,15 @@ export default function NewFormPage() {
         notes: formData.notes
       };
 
-      // Map items with actual supply item names for PDF
+      // Map items with actual supply item names for PDF, using current form data
       const pdfItems = items.map((item) => {
         const supplyItem = supplyItemsData.find((si) => si.id === item.itemName);
         return {
           id: item.id,
           itemName: supplyItem?.name || item.itemName,
           quantity: item.quantity,
-          unit: supplyItem?.unit || item.unit,
-          specifications: supplyItem?.specifications || item.specifications,
+          unit: item.unit, // Use current form unit (user may have modified it)
+          specifications: item.specifications, // Use current form specifications (user may have modified it)
           notes: item.notes,
         };
       });
@@ -457,7 +457,6 @@ export default function NewFormPage() {
                             onChange={(e) => handleItemChange(item.id, "unit", e.target.value)}
                             placeholder="Satuan"
                             required
-                            readOnly
                           />
                         </TableCell>
                         <TableCell>
@@ -465,7 +464,6 @@ export default function NewFormPage() {
                             value={item.specifications || ""}
                             onChange={(e) => handleItemChange(item.id, "specifications", e.target.value)}
                             placeholder="Spesifikasi"
-                            readOnly
                           />
                         </TableCell>
                         <TableCell>

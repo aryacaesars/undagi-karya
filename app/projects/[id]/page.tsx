@@ -368,9 +368,7 @@ export default function ProjectDetailPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList>
             <TabsTrigger value="overview">Ringkasan</TabsTrigger>
-            <TabsTrigger value="stages">Tahap Proyek</TabsTrigger>
-            <TabsTrigger value="supplies">Permintaan Persediaan</TabsTrigger>
-            <TabsTrigger value="documents">Dokumen</TabsTrigger>
+            <TabsTrigger value="stages">Riwayat Laporan Dokumen</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -434,7 +432,7 @@ export default function ProjectDetailPage() {
           <TabsContent value="stages" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Tahap Proyek</CardTitle>
+                <CardTitle>Riwayat Permintaan Dokumen</CardTitle>
                 <CardDescription>Lacak progres di berbagai fase proyek</CardDescription>
               </CardHeader>
               <CardContent>
@@ -443,19 +441,15 @@ export default function ProjectDetailPage() {
                     {project.forms.map((form, index) => (
                       <div key={form.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium">Form #{form.id}</h4>
+                          <h4 className="font-medium">{form.formNumber}</h4>
                         </div>
                         <div className="grid gap-2 md:grid-cols-2 text-sm text-muted-foreground mb-3">
                           <div>
                             <span className="font-medium">Dibuat:</span>{" "}
                             {new Date(form.createdAt).toLocaleDateString()}
                           </div>
-                          <div>
-                            <span className="font-medium">Status:</span> Aktif
-                          </div>
                         </div>
-                        <Progress value={100} className="h-2" />
-                      </div>
+                        </div>
                     ))}
                   </div>
                 ) : (
@@ -465,84 +459,6 @@ export default function ProjectDetailPage() {
                     <p className="text-sm">Form proyek akan tampil di sini ketika sudah dibuat.</p>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="supplies" className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Permintaan Persediaan</CardTitle>
-                  <CardDescription>Permintaan material dan peralatan untuk proyek ini</CardDescription>
-                </div>
-                <Button asChild>
-                  <Link href="/supply-requests/new">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Permintaan Baru
-                  </Link>
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID Permintaan</TableHead>
-                        <TableHead>Deskripsi</TableHead>
-                        <TableHead>Vendor</TableHead>
-                        <TableHead>Biaya</TableHead>
-                        <TableHead>Tanggal</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {supplyRequests.map((request) => (
-                        <TableRow key={request.id}>
-                          <TableCell className="font-medium">{request.id}</TableCell>
-                          <TableCell>{request.description}</TableCell>
-                          <TableCell>{request.vendor}</TableCell>
-                          <TableCell>${request.estimatedCost.toLocaleString()}</TableCell>
-                          <TableCell>{new Date(request.requestDate).toLocaleDateString()}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="documents" className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Dokumen Proyek</CardTitle>
-                  <CardDescription>File dan dokumen yang terkait dengan proyek ini</CardDescription>
-                </div>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Upload Dokumen
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {projectDocuments.map((doc) => (
-                    <div key={doc.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-                        <FileText className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">{doc.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {doc.type} • {doc.size} • {new Date(doc.uploadDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        Download
-                      </Button>
-                    </div>
-                  ))}
-                </div>
               </CardContent>
             </Card>
           </TabsContent>

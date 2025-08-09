@@ -34,12 +34,30 @@ export function parseCSVFile(file: File): Promise<ParsedItem[]> {
         
         const items: ParsedItem[] = dataLines
           .map((line) => {
-            const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
+            // Simple CSV parsing that handles quoted fields
+            const columns: string[] = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+              const char = line[i];
+              
+              if (char === '"' && (i === 0 || line[i-1] === ',')) {
+                inQuotes = true;
+              } else if (char === '"' && inQuotes && (i === line.length - 1 || line[i+1] === ',')) {
+                inQuotes = false;
+              } else if (char === ',' && !inQuotes) {
+                columns.push(current.trim());
+                current = '';
+              } else if (char !== '"' || inQuotes) {
+                current += char;
+              }
+            }
+            columns.push(current.trim()); // Add the last column
+            
             return {
               name: columns[0] || '',
-              category: columns[1] || '',
-              unit: columns[2] || '',
-              specifications: columns[3] || ''
+              specifications: columns[1] || ''
             };
           })
           .filter(item => item.name.trim() !== ''); // Filter out empty rows
@@ -79,8 +97,6 @@ export function validateItems(items: ParsedItem[]): ValidationResult {
     } else {
       valid.push({
         name: item.name.trim(),
-        category: item.category?.trim() || 'Umum', // Default category if empty
-        unit: item.unit?.trim() || 'pcs', // Default unit if empty
         specifications: item.specifications?.trim() || undefined
       });
     }

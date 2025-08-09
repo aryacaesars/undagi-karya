@@ -89,9 +89,15 @@ const revenueData = [
   { month: "Apr", forms: 0, projects: 0 },
   { month: "May", forms: 0, projects: 0 },
   { month: "Jun", forms: 0, projects: 0 },
+  { month: "Jul", forms: 0, projects: 0 },
+  { month: "Aug", forms: 0, projects: 0 },
+  { month: "Sep", forms: 0, projects: 0 },
+  { month: "Oct", forms: 0, projects: 0 },
+  { month: "Nov", forms: 0, projects: 0 },
+  { month: "Dec", forms: 0, projects: 0 },
 ]
 
-const projectStatusData = [
+const initialProjectStatusData = [
   { name: "Perencanaan", value: 0, color: "#8b5cf6" },
   { name: "Berjalan", value: 0, color: "#3b82f6" },
   { name: "Selesai", value: 0, color: "#10b981" },
@@ -105,40 +111,108 @@ const formTypeData = [
   { name: "Lainnya", value: 0, color: "#8b5cf6" },
 ]
 
-const recentActivities = [
-  {
-    id: 1,
-    type: "client",
-    title: "Selamat datang di sistem",
-    description: "Mulai dengan menambahkan klien pertama Anda",
-    time: "Baru saja",
-    icon: Users,
-  },
-  {
-    id: 2,
-    type: "project",
-    title: "Buat proyek baru",
-    description: "Tambahkan proyek konstruksi pertama",
-    time: "Baru saja",
-    icon: FolderOpen,
-  },
-  {
-    id: 3,
-    type: "supply",
-    title: "Kelola persediaan",
-    description: "Tambahkan item persediaan untuk proyek",
-    time: "Baru saja",
-    icon: Package,
-  },
-  {
-    id: 4,
-    type: "form",
-    title: "Buat formulir permintaan",
-    description: "Buat formulir permintaan material atau alat",
-    time: "Baru saja",
-    icon: FileText,
-  },
-]
+// Helper functions to process data
+const processMonthlyData = (forms: any[], projects: any[]) => {
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ]
+  
+  const monthlyStats = months.map(month => ({ month, forms: 0, projects: 0 }))
+  
+  // Process forms data
+  forms.forEach(form => {
+    if (form.createdAt) {
+      const date = new Date(form.createdAt)
+      const monthIndex = date.getMonth()
+      if (monthIndex >= 0 && monthIndex < 12) {
+        monthlyStats[monthIndex].forms++
+      }
+    }
+  })
+  
+  // Process projects data
+  projects.forEach(project => {
+    if (project.createdAt) {
+      const date = new Date(project.createdAt)
+      const monthIndex = date.getMonth()
+      if (monthIndex >= 0 && monthIndex < 12) {
+        monthlyStats[monthIndex].projects++
+      }
+    }
+  })
+  
+  return monthlyStats
+}
+
+const processFormTypeData = (forms: any[]) => {
+  const formTypes = {
+    "Permintaan Material": 0,
+    "Permintaan Alat": 0,
+    "Permintaan SDM": 0,
+    "Lainnya": 0,
+  }
+  
+  forms.forEach(form => {
+    if (form.type) {
+      const type = form.type.toLowerCase()
+      if (type.includes('material') || type.includes('bahan')) {
+        formTypes["Permintaan Material"]++
+      } else if (type.includes('alat') || type.includes('equipment')) {
+        formTypes["Permintaan Alat"]++
+      } else if (type.includes('sdm') || type.includes('manpower') || type.includes('tenaga')) {
+        formTypes["Permintaan SDM"]++
+      } else {
+        formTypes["Lainnya"]++
+      }
+    } else {
+      formTypes["Lainnya"]++
+    }
+  })
+  
+  return [
+    { name: "Permintaan Material", value: formTypes["Permintaan Material"], color: "#3b82f6" },
+    { name: "Permintaan Alat", value: formTypes["Permintaan Alat"], color: "#10b981" },
+    { name: "Permintaan SDM", value: formTypes["Permintaan SDM"], color: "#f59e0b" },
+    { name: "Lainnya", value: formTypes["Lainnya"], color: "#8b5cf6" },
+  ]
+}
+
+const processProjectStatusData = (projects: any[]) => {
+  const statusCounts = {
+    "Perencanaan": 0,
+    "Berjalan": 0,
+    "Selesai": 0,
+    "Ditunda": 0,
+  }
+  
+  projects.forEach(project => {
+    if (project.status) {
+      const status = project.status.toLowerCase()
+      if (status.includes('planning') || status.includes('perencanaan')) {
+        statusCounts["Perencanaan"]++
+      } else if (status.includes('progress') || status.includes('berjalan') || status.includes('ongoing')) {
+        statusCounts["Berjalan"]++
+      } else if (status.includes('completed') || status.includes('selesai') || status.includes('done')) {
+        statusCounts["Selesai"]++
+      } else if (status.includes('paused') || status.includes('ditunda') || status.includes('hold')) {
+        statusCounts["Ditunda"]++
+      } else {
+        statusCounts["Perencanaan"]++
+      }
+    } else {
+      statusCounts["Perencanaan"]++
+    }
+  })
+  
+  return [
+    { name: "Perencanaan", value: statusCounts["Perencanaan"], color: "#8b5cf6" },
+    { name: "Berjalan", value: statusCounts["Berjalan"], color: "#3b82f6" },
+    { name: "Selesai", value: statusCounts["Selesai"], color: "#10b981" },
+    { name: "Ditunda", value: statusCounts["Ditunda"], color: "#f59e0b" },
+  ]
+}
+
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState({
@@ -149,6 +223,9 @@ export default function Dashboard() {
     officers: 0,
     vendors: 0,
   })
+  const [monthlyData, setMonthlyData] = useState(revenueData)
+  const [formTypesData, setFormTypesData] = useState(formTypeData)
+  const [projectStatusData, setProjectStatusData] = useState(initialProjectStatusData)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -183,6 +260,25 @@ export default function Dashboard() {
           officers: officers.pagination?.totalItems || officers.data?.length || 0,
           vendors: vendors.pagination?.totalItems || vendors.data?.length || 0,
         })
+
+        // Process monthly data for charts
+        if (forms.data && Array.isArray(forms.data)) {
+          const monthlyStats = processMonthlyData(forms.data, projects.data || [])
+          setMonthlyData(monthlyStats)
+        }
+
+        // Process form types data
+        if (forms.data && Array.isArray(forms.data)) {
+          const formTypes = processFormTypeData(forms.data)
+          setFormTypesData(formTypes)
+        }
+
+        // Process project status data
+        if (projects.data && Array.isArray(projects.data)) {
+          const projectStatuses = processProjectStatusData(projects.data)
+          setProjectStatusData(projectStatuses)
+        }
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
       } finally {
@@ -271,15 +367,15 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
+        <div className="grid gap-4">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Statistik Bulanan</CardTitle>
               <CardDescription>Jumlah formulir dan proyek per bulan</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
               <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={revenueData}>
+                <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -296,8 +392,10 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+        </div>
 
-          <Card className="col-span-3">
+        <div className="grid gap-4 md:grid-cols-2">
+           <Card className="w-full">
             <CardHeader>
               <CardTitle>Distribusi Tipe Formulir</CardTitle>
               <CardDescription>Jenis formulir permintaan</CardDescription>
@@ -306,7 +404,7 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
-                    data={formTypeData}
+                    data={formTypesData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -315,7 +413,7 @@ export default function Dashboard() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {formTypeData.map((entry, index) => (
+                    {formTypesData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -324,41 +422,8 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Aktivitas Terkini</CardTitle>
-                <CardDescription>Pembaruan terbaru di seluruh sistem</CardDescription>
-              </div>
-              <Button variant="outline" size="sm">
-                <Eye className="h-4 w-4 mr-2" />
-                Lihat Semua
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
-                        <activity.icon className="h-4 w-4 text-blue-600" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                      <p className="text-sm text-gray-500">{activity.description}</p>
-                      <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="col-span-3">
+          <Card className="w-full">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Ringkasan Sistem</CardTitle>
