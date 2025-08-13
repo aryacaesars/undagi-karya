@@ -37,14 +37,56 @@ model Project {
   description  String?
   startDate    DateTime?
   endDate      DateTime?
+  // Progress & Milestone
+  milestone    Milestone  @default(PERENCANAAN)
+  progress     Int        @default(0) // 0 - 100 derived from milestone weight (not user editable directly)
+
+  // Financials
+  contractValue Decimal?   @db.Decimal(18,2)
+  paymentTerms   String?
+  totalPaid      Decimal?  @db.Decimal(18,2)
+
+  // Status lifecycle
+  status       ProjectStatus @default(ACTIVE)
   
   // Relations
   forms        Form[]
+  milestoneHistories ProjectMilestoneHistory[]
   
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   
   @@map("projects")
+}
+
+// Milestone enumeration with defined weights (see backend mapping for weights)
+enum Milestone {
+  PERENCANAAN
+  PERSIAPAN
+  PELAKSANAAN
+  FINISHING
+  SELESAI
+}
+
+enum ProjectStatus {
+  ACTIVE
+  STALL
+  TERMINATED
+  FINISH
+}
+
+model ProjectMilestoneHistory {
+  id          String    @id @default(cuid())
+  projectId   String
+  previousMilestone Milestone?
+  newMilestone Milestone
+  progress    Int
+  changedAt   DateTime  @default(now())
+  note        String?
+
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_milestone_histories")
 }
 
 model Officer {

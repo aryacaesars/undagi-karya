@@ -43,6 +43,7 @@ import {
 import Link from "next/link"
 import { useProjects } from "../../hooks/use-projects"
 import { useDebounce } from "../../hooks/use-debounce"
+import { formatCurrency } from "@/lib/utils"
 
 export default function ProjectsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -78,8 +79,9 @@ export default function ProjectsPage() {
     return <Badge className={colors[type.toLowerCase() as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{type}</Badge>
   }
 
-  const calculateProgress = (project: any) => {
-    // Hitung progress berdasarkan jumlah forms atau logika lain
+  // Fallback progress calculation if backend progress not present (legacy data)
+  const deriveProgress = (project: any) => {
+    if (typeof project.progress === 'number') return project.progress
     if (!project.forms || project.forms.length === 0) return 0
     return Math.min(project.forms.length * 20, 100)
   }
@@ -88,7 +90,7 @@ export default function ProjectsPage() {
   const stats = useMemo(() => {
     const totalProjects = projects.length
     const avgProgress = totalProjects > 0 
-      ? Math.round(projects.reduce((sum, project) => sum + calculateProgress(project), 0) / totalProjects)
+      ? Math.round(projects.reduce((sum, project) => sum + deriveProgress(project), 0) / totalProjects)
       : 0
     const uniqueTypes = new Set(projects.map(p => p.type).filter(Boolean)).size
 
@@ -285,7 +287,7 @@ export default function ProjectsPage() {
               ) : (
                 // Project cards
                 filteredProjects.map((project) => {
-                  const progress = calculateProgress(project)
+                  const progress = deriveProgress(project)
                   return (
                     <Card key={project.id} className="hover:shadow-md transition-shadow">
                       <CardHeader className="pb-3">
@@ -317,8 +319,22 @@ export default function ProjectsPage() {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           {getTypeBadge(project.type)}
+                          {project.milestone && (
+                            <Badge variant="outline" className="text-xs">
+                              {project.milestone.replace('_',' ')}
+                            </Badge>
+                          )}
+                          {project.status && (
+                            <Badge className={
+                              project.status === 'FINISH' ? 'bg-green-600' :
+                              project.status === 'STALL' ? 'bg-yellow-600' :
+                              project.status === 'TERMINATED' ? 'bg-red-600' : 'bg-blue-600'
+                            }>
+                              {project.status.toLowerCase()}
+                            </Badge>
+                          )}
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-4">
@@ -351,6 +367,10 @@ export default function ProjectsPage() {
                               {project.endDate ? new Date(project.endDate).toLocaleDateString() : "Belum ditentukan"}
                             </p>
                           </div>
+                          <div className="col-span-2">
+                            <p className="text-muted-foreground">Nilai Kontrak</p>
+                            <p className="font-medium">{formatCurrency(project.contractValue)}</p>
+                          </div>
                         </div>
 
                         <div>
@@ -359,9 +379,12 @@ export default function ProjectsPage() {
                         </div>
 
                         <div className="flex justify-between items-center pt-2">
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Progres: </span>
-                            <span className="font-medium">{progress}%</span>
+                          <div className="text-sm space-y-0.5">
+                            <div><span className="text-muted-foreground">Progres: </span>
+                              <span className="font-medium">{progress}%</span></div>
+                            {project.totalPaid && (
+                              <div className="text-xs text-muted-foreground">Paid: {formatCurrency(project.totalPaid)}</div>
+                            )}
                           </div>
                           <Button variant="outline" size="sm" asChild>
                             <Link href={`/projects/${project.id}`}>Lihat Detail</Link>

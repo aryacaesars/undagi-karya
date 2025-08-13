@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -34,7 +34,10 @@ import {
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useProjectDetail } from "../../../hooks/use-project-detail"
-import { Project } from "../../../types/project"
+import { Project, Milestone } from "../../../types/project"
+import { formatCurrency, MILESTONE_WEIGHTS } from "@/lib/utils"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 
 // Mock data untuk demo (akan diganti dengan data real)
 const projectStages = [
@@ -126,11 +129,7 @@ export default function ProjectDetailPage() {
     return <Badge className={colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"}>{type}</Badge>
   }
 
-  const calculateProgress = () => {
-    if (!project?.forms || project.forms.length === 0) return 0
-    // Hitung progress berdasarkan jumlah forms atau logika lain yang sesuai
-    return Math.min(project.forms.length * 20, 100) // Contoh kalkulasi
-  }
+  const progress = project?.progress ?? 0
 
   const calculateDaysRemaining = () => {
     if (!project?.endDate) return 0
@@ -337,8 +336,22 @@ export default function ProjectDetailPage() {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{calculateProgress()}%</div>
-              <Progress value={calculateProgress()} className="mt-2" />
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-2xl font-bold">{progress}%</span>
+                {project?.status && (
+                  <Badge className={
+                    project.status === 'FINISH' ? 'bg-green-600' :
+                    project.status === 'STALL' ? 'bg-yellow-600' :
+                    project.status === 'TERMINATED' ? 'bg-red-600' : 'bg-blue-600'}>
+                    {project.status.toLowerCase()}
+                  </Badge>
+                )}
+              </div>
+              <Progress value={progress} className="mt-1" />
+              <div className="mt-2 text-xs text-muted-foreground flex flex-wrap gap-2 items-center">
+                <span>Milestone:</span>
+                {project?.milestone && <Badge variant="outline">{project.milestone}</Badge>}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -365,10 +378,11 @@ export default function ProjectDetailPage() {
           </Card>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Ringkasan</TabsTrigger>
-            <TabsTrigger value="stages">Riwayat Laporan Dokumen</TabsTrigger>
+      <TabsTrigger value="overview">Ringkasan</TabsTrigger>
+      <TabsTrigger value="milestones">Milestone</TabsTrigger>
+      <TabsTrigger value="forms">Riwayat Laporan Dokumen</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -419,6 +433,24 @@ export default function ProjectDetailPage() {
                   </div>
                 </div>
                 <Separator />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Nilai Kontrak</p>
+                    <p className="text-sm text-muted-foreground">{formatCurrency(project.contractValue)}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Total Dibayarkan</p>
+                    <p className="text-sm text-muted-foreground">{formatCurrency(project.totalPaid)}</p>
+                    {project.contractValue && project.totalPaid && (
+                      <p className="text-xs">Sisa: {formatCurrency((parseFloat(project.contractValue) - parseFloat(project.totalPaid)).toString())}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <p className="text-sm font-medium">Termin Pembayaran</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{project.paymentTerms || '-'}</p>
+                  </div>
+                </div>
+                <Separator />
                 <div>
                   <p className="text-sm font-medium mb-2">Deskripsi</p>
                   <p className="text-sm text-muted-foreground">
@@ -429,7 +461,47 @@ export default function ProjectDetailPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="stages" className="space-y-4">
+          <TabsContent value="milestones" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Kelola Milestone</CardTitle>
+                <CardDescription>Update milestone akan otomatis menyesuaikan progress dan menyimpan riwayat</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <MilestoneUpdater project={project} onUpdated={refetch} />
+                <Separator />
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Riwayat Milestone</h4>
+                  {project.milestoneHistories && project.milestoneHistories.length > 0 ? (
+                    <div className="space-y-2 max-h-72 overflow-auto pr-2">
+                      {project.milestoneHistories.map(h => (
+                        <div key={h.id} className="flex justify-between text-xs border rounded p-2">
+                          <div className="space-y-1">
+                            <div>
+                              {h.previousMilestone ? (
+                                <>{h.previousMilestone} ➜ <span className="font-medium">{h.newMilestone}</span></>
+                              ) : (
+                                <span className="font-medium">{h.newMilestone}</span>
+                              )}
+                            </div>
+                            {h.note && <div className="text-muted-foreground">{h.note}</div>}
+                          </div>
+                          <div className="text-right space-y-1">
+                            <div className="font-medium">{h.progress}%</div>
+                            <div className="text-muted-foreground">{new Date(h.changedAt).toLocaleString()}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Belum ada riwayat.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="forms" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Riwayat Permintaan Dokumen</CardTitle>
@@ -465,5 +537,64 @@ export default function ProjectDetailPage() {
         </Tabs>
       </div>
     </SidebarInset>
+  )
+}
+
+// Component for updating milestone
+function MilestoneUpdater({ project, onUpdated }: { project: Project, onUpdated: () => void }) {
+  const [milestone, setMilestone] = useState<Milestone>(project.milestone)
+  const [note, setNote] = useState('')
+  const [pending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
+  const weights = MILESTONE_WEIGHTS
+
+  const handleUpdate = () => {
+    setError(null)
+    startTransition(async () => {
+      try {
+        const res = await fetch('/api/projects/milestone', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: project.id, milestone, note: note || undefined })
+        })
+        const data = await res.json()
+        if (!res.ok || !data.success) throw new Error(data.error || 'Gagal update milestone')
+        setNote('')
+        onUpdated()
+      } catch (e:any) {
+        setError(e.message)
+      }
+    })
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="grid gap-2 md:grid-cols-4 items-end">
+        <div className="space-y-1 md:col-span-2">
+          <label className="text-xs font-medium">Milestone</label>
+          <Select value={milestone} onValueChange={(v:any)=>setMilestone(v)} disabled={pending}>
+            <SelectTrigger>
+              <SelectValue placeholder="Pilih milestone" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.keys(weights).map(m => (
+                <SelectItem key={m} value={m}>{m} ({weights[m]}%)</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1 md:col-span-2">
+          <label className="text-xs font-medium">Catatan (opsional)</label>
+          <Textarea rows={2} value={note} onChange={e=>setNote(e.target.value)} disabled={pending} />
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <Button size="sm" onClick={handleUpdate} disabled={pending || milestone === project.milestone}>
+          {pending ? 'Menyimpan...' : 'Update Milestone'}
+        </Button>
+        <p className="text-xs text-muted-foreground">Progress akan diset ke bobot milestone secara otomatis.</p>
+      </div>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+    </div>
   )
 }

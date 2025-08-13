@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/lib/generated/prisma';
+import { MILESTONE_WEIGHTS } from '@/lib/utils';
 
 const prisma = new PrismaClient();
 
@@ -23,6 +24,9 @@ export async function GET(request: NextRequest) {
               officer: true,
               items: true
             }
+          },
+          milestoneHistories: {
+            orderBy: { changedAt: 'desc' }
           }
         }
       });
@@ -95,7 +99,10 @@ export async function POST(request: NextRequest) {
       location, 
       description,
       startDate,
-      endDate 
+      endDate,
+      contractValue,
+      paymentTerms,
+      totalPaid
     } = body;
 
     // Validasi input
@@ -132,7 +139,11 @@ export async function POST(request: NextRequest) {
         location: location?.trim() || null,
         description: description?.trim() || null,
         startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null
+        endDate: endDate ? new Date(endDate) : null,
+        contractValue: contractValue ? String(contractValue) : null,
+        paymentTerms: paymentTerms?.trim() || null,
+        totalPaid: totalPaid ? String(totalPaid) : null,
+        // milestone default PERENCANAAN, progress 0 handled by schema
       }
     });
 
@@ -164,7 +175,12 @@ export async function PUT(request: NextRequest) {
       location, 
       description,
       startDate,
-      endDate 
+      endDate,
+      milestone, // new milestone value (enum key uppercase)
+      contractValue,
+      paymentTerms,
+      totalPaid,
+      status // allow explicit status changes except finish auto-handled
     } = body;
 
     if (!id) {
@@ -206,6 +222,32 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    let progressUpdate: number | undefined;
+    let milestoneHistoryCreate: any | undefined;
+    let newMilestoneValue = existingProject.milestone;
+
+    if (milestone && milestone !== existingProject.milestone) {
+      // validate milestone is allowed
+      if (!MILESTONE_WEIGHTS[milestone]) {
+        return NextResponse.json({ error: 'Milestone tidak valid' }, { status: 400 });
+      }
+      newMilestoneValue = milestone;
+      progressUpdate = MILESTONE_WEIGHTS[milestone];
+      milestoneHistoryCreate = {
+        create: {
+          previousMilestone: existingProject.milestone,
+          newMilestone: milestone,
+          progress: progressUpdate,
+        }
+      };
+    }
+
+    // Determine status update: if progress hits 100 or milestone == SELESAI then status FINISH
+    let statusUpdate = status || existingProject.status;
+    if (progressUpdate === 100 || newMilestoneValue === 'SELESAI') {
+      statusUpdate = 'FINISH';
+    }
+
     const updatedProject = await prisma.project.update({
       where: { id },
       data: {
@@ -216,7 +258,14 @@ export async function PUT(request: NextRequest) {
         location: location?.trim() || null,
         description: description?.trim() || null,
         startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null
+        endDate: endDate ? new Date(endDate) : null,
+        milestone: newMilestoneValue,
+        progress: progressUpdate ?? existingProject.progress,
+        contractValue: contractValue !== undefined ? (contractValue ? String(contractValue) : null) : existingProject.contractValue,
+        paymentTerms: paymentTerms !== undefined ? (paymentTerms?.trim() || null) : existingProject.paymentTerms,
+        totalPaid: totalPaid !== undefined ? (totalPaid ? String(totalPaid) : null) : existingProject.totalPaid,
+        status: statusUpdate,
+        milestoneHistories: milestoneHistoryCreate
       }
     });
 
